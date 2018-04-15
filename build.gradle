@@ -1,0 +1,39 @@
+plugins {
+    id 'war'
+    id 'net.ltgt.apt' version '0.10'
+    id "org.akhikhl.gretty" version "2.0.0"
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url 'https://repo.spring.io/libs-release'
+    }
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
+gretty {
+    httpPort = 9876
+    contextPath = '/'
+}
+
+group 'com.slesh'
+version '1.0-SNAPSHOT'
+
+ext {
+    lombockVersion = '1.16.20'
+    servletapiVersion = '4.0.0'
+    springDataMongodbVersion = '2.1.0.M2'
+    springDataRestWebMvcVersion = '3.1.0.M2'
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:${lombockVersion}"
+    apt "org.projectlombok:lombok:${lombockVersion}"
+    compile "org.springframework.data:spring-data-mongodb:${springDataMongodbVersion}"
+    compile "org.springframework.data:spring-data-rest-webmvc:${springDataRestWebMvcVersion}"
+    providedCompile "javax.servlet:javax.servlet-api:${servletapiVersion}"
+}
