@@ -7,18 +7,16 @@ const path = require('path')
 module.exports = {
   dev: {
 
-    proxy: {
-      "/api": {
-        target: "http://localhost:8558",
-        secure: false,
-        logLevel: "debug"
-      }
-    },
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      "/api": {
+        target: "http://localhost:8558",
+        secure: false,
+        logLevel: "debug",
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

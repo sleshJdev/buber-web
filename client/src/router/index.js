@@ -1,15 +1,23 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HomeComponent from '@/components/HomeComponent';
+import Ads from '../components/Ads';
+import AdForm from '../components/AdForm';
+import AdReview from '../components/AdReview';
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {
+      name: 'ad-review',
+      path: '/ads/review',
+      component: AdReview,
+    }, {
       path: '/',
-      name: 'Home',
-      component: HomeComponent,
+      component: Ads,
+    }, {
+      path: '/ads',
+      component: AdForm,
     },
   ],
 });

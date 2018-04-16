@@ -15,7 +15,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[0];
+        return new Class[]{WebConfiguration.class};
     }
 
     @Override
@@ -26,7 +26,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         super.customizeRegistration(registration);
-        String userHome = System.getProperty("user.home");
+        String userHome = System.getProperty("java.io.tmpdir");
         File bannersDir = Paths.get(userHome, ".gallery/banners").toFile();
         if (!bannersDir.exists()) {
             if (!bannersDir.mkdirs()) {
