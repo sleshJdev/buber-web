@@ -15,7 +15,7 @@ public class Ad {
     private String id;
     private String name;
     private String tel;
-    private String location;
+    private Location location;
     private String description;
     private String createdOn;
     @JsonIgnore

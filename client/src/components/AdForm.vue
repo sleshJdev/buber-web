@@ -15,11 +15,14 @@
     <b-form-group id="form-group-location"
                   label="Your Location:"
                   label-for="form-location">
-      <b-form-select id="form-location"
-                     :options="locations"
-                     required
-                     v-model="form.location">
-      </b-form-select>
+      <vue-google-autocomplete
+        id="map"
+        :enable-geolocation="true"
+        classname="form-control"
+        placeholder="Start typing"
+        v-on:placechanged="getAddressData"
+        required>
+      </vue-google-autocomplete>
     </b-form-group>
     <b-form-group id="form-group-banner"
                   label="Banner:"
@@ -48,8 +51,11 @@
 </template>
 
 <script>
+  import VueGoogleAutocomplete from 'vue-google-autocomplete';
+
   export default {
     name: 'ad-form',
+    components: { VueGoogleAutocomplete },
     data() {
       return {
         form: {
@@ -59,13 +65,15 @@
           banner: null,
           description: null,
         },
-        locations: [
-          { text: 'Select Location', value: null },
-          'Minsk', 'New-York', 'Paris', 'Moscow',
-        ],
       };
     },
     methods: {
+      getAddressData(addressData, placeResultData) {
+        this.form.location = {
+          placeId: placeResultData.place_id,
+          formattedAddress: placeResultData.formatted_address,
+        };
+      },
       onSubmit(evt) {
         evt.preventDefault();
 

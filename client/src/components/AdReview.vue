@@ -7,7 +7,7 @@
           <span class="text-info">Created By</span> : {{ad.name || 'Anonymous'}}
           <span class="text-info">Created On</span> : {{formatDate(ad.createdOn)}}
           <span class="text-info">Tel</span> : {{ad.tel}}
-          <span class="text-info">Location</span> : {{ad.location}}
+          <span class="text-info">Location</span> : {{ad.location.formattedAddress}}
         </p>
         <p>
         </p>

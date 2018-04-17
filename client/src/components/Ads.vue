@@ -9,7 +9,7 @@
       </b-card-body>
       <b-card-footer>
         <small class="text-muted">
-          Location: {{ad.location || 'Undefined'}}
+          Location: {{ad.location.formattedAddress || 'Undefined'}}
         </small>
       </b-card-footer>
       <b-card-img :src="ad._links.banner.href" bottom></b-card-img>
