@@ -26,7 +26,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     indent: "off",
-    "no-console": process.env.NODE_ENV === 'production' ? true : 'off',
+    "no-console": process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       // don't require .vue extension when importing
     'import/extensions': ['error', 'always', {
       js: 'never',

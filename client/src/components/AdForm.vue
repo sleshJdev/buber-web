@@ -1,10 +1,23 @@
 <template>
   <b-form class="pl-5 pr-5" @submit="onSubmit" @reset="onReset">
     <h1 class="text-center">Fill out fields before post your ad</h1>
+    <b-form-group id="form-group-name"
+                  label="Your Name:"
+                  label-for="form-name"
+                  description="How you would like another users addressed to you"
+                  horizontal>
+      <b-form-input id="form-name"
+                    type="text"
+                    v-model="form.name"
+                    required
+                    placeholder="Enter your phone number">
+      </b-form-input>
+    </b-form-group>
     <b-form-group id="form-group-tel"
                   label="Phone number:"
                   label-for="form-tel"
-                  description="Your phone number will be visible only in your pfofile.">
+                  description="Your phone number will be visible only in your pfofile."
+                  horizontal>
       <b-form-input id="form-tel"
                     type="tel"
                     v-model="form.tel"
@@ -14,7 +27,8 @@
     </b-form-group>
     <b-form-group id="form-group-location"
                   label="Your Location:"
-                  label-for="form-location">
+                  label-for="form-location"
+                  horizontal>
       <vue-google-autocomplete
         id="map"
         ref="location"
@@ -27,9 +41,11 @@
     </b-form-group>
     <b-form-group id="form-group-banner"
                   label="Banner:"
-                  label-for="form-banner">
+                  label-for="form-banner"
+                  horizontal>
       <b-form-file id="form-banner"
                    ref="banner"
+                   size="lg"
                    :state="Boolean(form.banner)"
                    v-model="form.banner"
                    accept="image/*"
@@ -39,7 +55,8 @@
     </b-form-group>
     <b-form-group id="form-goup-description"
                   label="Ad description"
-                  label-for="form-description">
+                  label-for="form-description"
+                  horizontal>
       <b-form-textarea id="form-description"
                        v-model="form.description"
                        placeholder="Enter ad description"
