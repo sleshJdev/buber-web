@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - 7333:7333
+    container_name: ad-gallery-client
+    depends_on:
+      - backend
+  backend:
+    build:
+        context: .
+    ports:
+      - 7222:7222
+    container_name: ad-gallery-backend
+    depends_on:
+      - mongo
+  mongo:
+    container_name: ad-gallery-mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - 27017:27017
