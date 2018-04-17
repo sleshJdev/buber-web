@@ -35,7 +35,6 @@ public class WebConfiguration {
     @Bean
     public RepositoryRestConfigurer repositoryRestConfigurer() {
         return RepositoryRestConfigurer.withConfig(config -> {
-            config.exposeIdsFor(Ad.class);
             config.setBasePath("/api");
         });
     }

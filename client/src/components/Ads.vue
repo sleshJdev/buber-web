@@ -38,7 +38,7 @@
         return Times.format(date);
       },
       fetchAds() {
-        return fetch('/api/ads')
+        return fetch('/api/ads?size=1000&sort=createdOn,desc')
           .then(response => response.json())
           .then((data) => {
             // eslint-disable-next-line

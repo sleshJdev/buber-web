@@ -17,6 +17,7 @@
                   label-for="form-location">
       <vue-google-autocomplete
         id="map"
+        ref="location"
         :enable-geolocation="true"
         classname="form-control"
         placeholder="Start typing"
@@ -28,11 +29,12 @@
                   label="Banner:"
                   label-for="form-banner">
       <b-form-file id="form-banner"
+                   ref="banner"
                    :state="Boolean(form.banner)"
                    v-model="form.banner"
                    accept="image/*"
                    required
-                   placeholder="Choose a banner">
+                   placeholder="Choose or drag&drop a banner for your ad">
       </b-form-file>
     </b-form-group>
     <b-form-group id="form-goup-description"
@@ -100,9 +102,9 @@
         /* Reset our form values */
         this.form.tel = null;
         this.form.name = null;
-        this.form.location = null;
-        this.form.banner = null;
         this.form.description = null;
+        this.$refs.location.clear();
+        this.$refs.banner.reset();
       },
     },
   };
