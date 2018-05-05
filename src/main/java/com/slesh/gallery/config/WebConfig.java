@@ -14,7 +14,7 @@ import org.springframework.hateoas.mvc.BasicLinkBuilder;
 import java.util.Collections;
 
 @Configuration
-public class WebConfiguration {
+public class WebConfig {
 
     @Bean
     public ResourceProcessor<Resource<Ad>> personProcessor() {

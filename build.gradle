@@ -26,17 +26,21 @@ version '1.0-SNAPSHOT'
 ext {
     lombockVersion = '1.16.20'
     servletapiVersion = '4.0.0'
+    junitVersion = '4.12'
+    springTestVersion = '5.0.5.RELEASE'
     springDataMongodbVersion = '2.1.0.M2'
     springDataRestWebMvcVersion = '3.1.0.M2'
     log4jVersion = '1.2.17'
     slf4jVersion = '1.7.25'
+    logbackVersion = '1.2.3'
 }
 
 dependencies {
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
     compileOnly "org.projectlombok:lombok:${lombockVersion}"
     apt "org.projectlombok:lombok:${lombockVersion}"
-    compile "log4j:log4j:${log4jVersion}"
-    compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    testCompile "junit:junit:${junitVersion}"
+    compile "org.springframework:spring-test:${springTestVersion}"
     compile "org.springframework.data:spring-data-mongodb:${springDataMongodbVersion}"
     compile "org.springframework.data:spring-data-rest-webmvc:${springDataRestWebMvcVersion}"
     providedCompile "javax.servlet:javax.servlet-api:${servletapiVersion}"
