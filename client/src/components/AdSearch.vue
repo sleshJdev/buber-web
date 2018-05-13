@@ -1,12 +1,12 @@
 <template>
   <b-form inline class="mb-3">
     <b-form-input type="text"
-                  class="mr-3 col-md-3"
+                  class="mb-3 col-md-6"
                   v-model="query.name"
                   placeholder="Search by username...">
     </b-form-input>
     <b-form-input type="text"
-                  class="col-md-4"
+                  class="mb-3 col-md-6"
                   v-model="query.location"
                   placeholder="Type location where to search..."
                   required>
