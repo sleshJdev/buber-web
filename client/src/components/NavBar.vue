@@ -22,7 +22,7 @@
             <em>User</em>
           </template>
           <b-dropdown-item href="#">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Signout</b-dropdown-item>
+          <b-dropdown-item href="#">SignOut</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
 
@@ -33,6 +33,7 @@
 <script>
   export default {
     name: 'nav-bar',
+
   };
 </script>
 
