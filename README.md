@@ -1,2 +1,2 @@
-# ad-gallery
-Ad service like gallery of banners
+# Buber
+Buber is an app for searching an special 'girls'
