@@ -7,8 +7,8 @@
     </b-form-input>
     <b-form-input type="text"
                   class="col-sm-6 mb-3"
-                  v-model="query.location"
-                  placeholder="Type location where to search..."
+                  v-model="query.address"
+                  placeholder="Type address where to search..."
                   required>
     </b-form-input>
   </b-form>
@@ -17,12 +17,12 @@
 <script>
   export default {
     name: 'ad-search',
-    props: ['onSearch', 'locations'],
+    props: ['onSearch'],
     data() {
       return {
         query: {
           name: null,
-          location: null,
+          address: null,
         },
       };
     },

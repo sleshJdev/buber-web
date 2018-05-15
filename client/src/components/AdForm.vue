@@ -106,7 +106,7 @@
       getAddressData(addressData, placeResultData) {
         this.form.location = {
           placeId: placeResultData.place_id,
-          formattedAddress: placeResultData.formatted_address,
+          address: placeResultData.formatted_address,
         };
       },
       onSubmit(evt) {
