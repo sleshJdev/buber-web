@@ -93,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
                 new MediaTypeRequestMatcher(new HeaderContentNegotiationStrategy(), MediaType.APPLICATION_JSON_UTF8)
             ));
-            setAuthenticationManager(SecurityConfig.this.authenticationManager());
+            setAuthenticationManager(authenticationManager());
         }
 
         @Override
