@@ -1,7 +1,7 @@
 package com.slesh.gallery.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.slesh.gallery.auth.SignInRequest;
+import com.slesh.gallery.auth.AuthRequest;
 import com.slesh.gallery.persistence.model.ApplicationUser;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
 import io.jsonwebtoken.Jwts;
@@ -69,10 +69,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
         return key/*id/username/email*/ -> {
             Example<ApplicationUser> example = Example.of(
-                new ApplicationUser(key, key, key, null, null),
-                ExampleMatcher.matchingAny()
-                    .withStringMatcher(ExampleMatcher.StringMatcher.EXACT)
-                    .withIgnoreNullValues());
+                new ApplicationUser(key, key, null, null),
+                ExampleMatcher.matchingAny());
             return applicationUserRepository.findOne(example)
                 .map(user -> new User(
                     user.getUsername(),
@@ -87,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(11);
+        return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -100,6 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and()
             .csrf().disable()
             .authorizeRequests()
+            .antMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
             .antMatchers(HttpMethod.GET, "/api/ads").permitAll()
             .antMatchers(HttpMethod.GET, "/api/ads/review").authenticated()
             .antMatchers(HttpMethod.GET, "/api/ads/*/banner").permitAll()
@@ -129,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public Authentication attemptAuthentication(HttpServletRequest request,
                                                     HttpServletResponse response)
             throws AuthenticationException, IOException {
-            SignInRequest signInRequest = objectMapper.readValue(request.getInputStream(), SignInRequest.class);
+            AuthRequest signInRequest = objectMapper.readValue(request.getInputStream(), AuthRequest.class);
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 signInRequest.getUsername(), signInRequest.getPassword());
 

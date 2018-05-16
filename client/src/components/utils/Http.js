@@ -60,7 +60,9 @@ export default class Auth {
   static signIn(credentials) {
     return this.doPost(
       '/api/auth/sign-in',
-      credentials).then((response) => {
+      // eslint-disable-next-line
+      credentials
+    ).then((response) => {
       const headers = response.headers;
       if (headers.has(HEADER_STRING)) {
         localStorage.setItem(AUTH_TOKEN_KEY, headers.get(HEADER_STRING));
@@ -69,6 +71,14 @@ export default class Auth {
         };
       }
     });
+  }
+
+  static signUp(credentials) {
+    return this.doPost(
+      '/api/auth/sign-up',
+      // eslint-disable-next-line
+      credentials
+    );
   }
 
   static doGet(url) {
