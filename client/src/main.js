@@ -6,9 +6,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+import Http from './components/utils/Http';
 
 Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
+
+Http.setRouter(router);
 
 /* eslint-disable no-new */
 new Vue({

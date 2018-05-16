@@ -23,6 +23,7 @@
 
 <script>
   import Times from './utils/Times';
+  import Http from './utils/Http';
   import AdSearch from './AdSearch';
 
   export default {
@@ -37,9 +38,11 @@
       };
     },
     methods: {
+      isSignedIn() {
+        return Http.isSignedIn();
+      },
       search(query) {
-        return fetch(`/api/ads/?name=${query.name || ''}&address=${query.address || ''}`)
-          .then(response => response.json())
+        return Http.doGet(`/api/ads?name=${query.name || ''}&address=${query.address || ''}`)
           .then((data) => {
             // eslint-disable-next-line
             const now = new Date();

@@ -22,6 +22,7 @@
 
 <script>
   import Times from './utils/Times';
+  import Http from './utils/Http';
 
   export default {
     name: 'ad-review',
@@ -39,11 +40,9 @@
       },
       fetchAd() {
         const adId = this.$route.query.id;
-        return fetch(`/api/ads/${adId}`)
-          .then(response => response.json())
-          .then((data) => {
-            this.ad = data;
-          });
+        return Http.doGet(`/api/ads/${adId}`).then((data) => {
+          this.ad = data;
+        });
       },
     },
   };

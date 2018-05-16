@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slesh.gallery.auth.SignInRequest;
 import com.slesh.gallery.persistence.model.ApplicationUser;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -14,9 +16,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,21 +28,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final long EXPIRATION_TIME = 864_000_000; // 10 days
+    private static final String HEADER_STRING = "X-Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String SECRET = "super-secret-key";
     private final ApplicationUserRepository applicationUserRepository;
     private final ObjectMapper objectMapper;
 
@@ -80,17 +97,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .cors().disable()
+        http.cors().and()
+            .csrf().disable()
             .authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/api/ads").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/ads/review").authenticated()
+            .antMatchers(HttpMethod.GET, "/api/ads/*/banner").permitAll()
             .antMatchers("/api/**").authenticated().and()
-            .addFilterAt(new TokenAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .addFilterAt(new TokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAt(new TokenAuthorizationFilter(), BasicAuthenticationFilter.class);
     }
 
-    private class TokenAuthFilter extends AbstractAuthenticationProcessingFilter {
-        TokenAuthFilter() throws Exception {
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+    }
+
+    private class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+        TokenAuthenticationFilter() throws Exception {
             super(new AndRequestMatcher(
-                new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/auth/sign-in", HttpMethod.POST.name()),
                 new MediaTypeRequestMatcher(new HeaderContentNegotiationStrategy(), MediaType.APPLICATION_JSON_UTF8)
             ));
             setAuthenticationManager(authenticationManager());
@@ -99,21 +128,57 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         public Authentication attemptAuthentication(HttpServletRequest request,
                                                     HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException, IOException {
             SignInRequest signInRequest = objectMapper.readValue(request.getInputStream(), SignInRequest.class);
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 signInRequest.getUsername(), signInRequest.getPassword());
 
-            // Allow subclasses to set the "details" property
             authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 
             return this.getAuthenticationManager().authenticate(authRequest);
         }
 
         @Override
-        protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-            super.successfulAuthentication(request, response, chain, authResult);
-            objectMapper.writeValue(response.getOutputStream(), "Ok!!!!");
+        protected void successfulAuthentication(HttpServletRequest req,
+                                                HttpServletResponse res,
+                                                FilterChain chain,
+                                                Authentication auth) throws IOException {
+            String token = Jwts.builder()
+                .setSubject(((User) auth.getPrincipal()).getUsername())
+                .setExpiration(Date.from(Instant.now().plusMillis(EXPIRATION_TIME)))
+                .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
+                .compact();
+            res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        }
+    }
+
+    private class TokenAuthorizationFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(HttpServletRequest req,
+                                        HttpServletResponse res,
+                                        FilterChain chain)
+            throws ServletException, IOException {
+
+            String header = req.getHeader(HEADER_STRING);
+            if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+                chain.doFilter(req, res);
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(req, res);
+        }
+
+        private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
+            return Optional.ofNullable(req.getHeader(HEADER_STRING))
+                .map(token -> Jwts.parser()
+                    .setSigningKey(SECRET.getBytes())
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .getBody()
+                    .getSubject())
+                .map(user -> new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>()))
+                .orElse(null);
         }
     }
 }

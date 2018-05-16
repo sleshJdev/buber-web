@@ -75,9 +75,9 @@
           </b-form-textarea>
         </b-form-group>
         <div class="row justify-content-end">
-          <b-button-group size="md">
-            <b-button type="reset" right variant="danger">Reset</b-button>
-            <b-button type="submit" right variant="primary">Submit</b-button>
+          <b-button-group>
+            <b-button type="reset" variant="danger">Reset</b-button>
+            <b-button type="submit" variant="primary">Submit</b-button>
           </b-button-group>
         </div>
       </b-form>
@@ -87,6 +87,7 @@
 
 <script>
   import VueGoogleAutocomplete from 'vue-google-autocomplete';
+  import Http from './utils/Http';
 
   export default {
     name: 'ad-form',
@@ -123,10 +124,7 @@
         }));
         formData.append('file', this.form.banner);
 
-        fetch('/api/ads', {
-          method: 'POST',
-          body: formData,
-        }).then(() => {
+        Http.doPost('/api/ads', formData).then(() => {
           this.$router.push('/');
         });
       },
