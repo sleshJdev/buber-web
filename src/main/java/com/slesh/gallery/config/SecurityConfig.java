@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slesh.gallery.auth.SignInRequest;
 import com.slesh.gallery.persistence.model.ApplicationUser;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
@@ -63,6 +66,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .collect(Collectors.toList())))
                 .orElseThrow(() -> new UsernameNotFoundException("User with key" + key + "not found"));
         };
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(11);
     }
 
     @Override
