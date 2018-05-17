@@ -7,7 +7,7 @@
       </small>
     </p>
     <div class="row justify-content-center">
-      <b-form class="col-4" @submit="onSubmit">
+      <b-form class="col-4" @submit.prevent="onSubmit">
         <b-input-group class="mb-2">
           <b-input placeholder="Username or email" v-model="credentials.username"/>
         </b-input-group>

@@ -20,7 +20,7 @@
         <b-nav-item-dropdown right v-if="signedIn">
           <!-- Using button-content slot -->
           <template slot="button-content">
-            <em>{{username}}</em>
+            Hi, <em>{{username}}</em>!
           </template>
           <b-dropdown-item href="#">Profile</b-dropdown-item>
           <b-dropdown-item href="#" @click="signOut">SignOut</b-dropdown-item>

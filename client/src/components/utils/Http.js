@@ -9,18 +9,27 @@ let userInfo = null;
 // eslint-disable-next-line
 let router = null;
 
-function getHeader() {
+function getHeader(jsonContentType = true) {
   const headers = new Headers();
   const authToken = localStorage.getItem(AUTH_TOKEN_KEY);
   if (authToken) {
     headers.append(HEADER_STRING, authToken);
   }
-  headers.append(CONTENT_TYPE_HEADER, MEDIA_TYPE_JSON_UTF8);
+  if (jsonContentType) {
+    headers.append(CONTENT_TYPE_HEADER, MEDIA_TYPE_JSON_UTF8);
+  }
   return headers;
 }
 
 function toSignForm(response) {
-  router.push({ name: 'sign-in' });
+  switch (response.status) {
+    case 401:
+    case 403:
+      router.push({ name: 'sign-in' });
+      break;
+    default:
+      router.push('/');
+  }
   return Promise.reject(response);
 }
 
@@ -61,7 +70,7 @@ export default class Auth {
     return this.doPost(
       '/api/auth/sign-in',
       // eslint-disable-next-line
-      credentials
+      JSON.stringify(credentials)
     ).then((response) => {
       const headers = response.headers;
       if (headers.has(HEADER_STRING)) {
@@ -77,7 +86,7 @@ export default class Auth {
     return this.doPost(
       '/api/auth/sign-up',
       // eslint-disable-next-line
-      credentials
+      JSON.stringify(credentials)
     );
   }
 
@@ -89,11 +98,11 @@ export default class Auth {
       .catch(toSignForm);
   }
 
-  static doPost(url, data) {
+  static doPost(url, data, jsonContentType = true) {
     return fetch(url, {
       method: 'POST',
-      body: JSON.stringify(data),
-      headers: getHeader(),
+      body: data,
+      headers: getHeader(jsonContentType),
     }).then(toJson)
       .catch(toSignForm);
   }

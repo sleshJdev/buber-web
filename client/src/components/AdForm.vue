@@ -5,7 +5,7 @@
       <small class="text-warning">Fill out fields before post your ad</small>
     </p>
     <div class="row justify-content-center">
-      <b-form class="pl-5 pr-5 col-9" @submit="onSubmit" @reset="onReset">
+      <b-form class="pl-5 pr-5 col-9" @submit.prevent="onSubmit" @reset="onReset">
         <b-form-group id="form-group-name"
                       label="Your Name:"
                       label-for="form-name"
@@ -110,9 +110,7 @@
           address: placeResultData.formatted_address,
         };
       },
-      onSubmit(evt) {
-        evt.preventDefault();
-
+      onSubmit() {
         const formData = new FormData();
         formData.append('ad', new Blob([JSON.stringify({
           tel: this.form.tel,
@@ -124,9 +122,8 @@
         }));
         formData.append('file', this.form.banner);
 
-        Http.doPost('/api/ads', formData).then(() => {
-          this.$router.push('/');
-        });
+        Http.doPost('/api/ads', formData, false).then(
+          () => this.$router.push('/'));
       },
       onReset(evt) {
         evt.preventDefault();
