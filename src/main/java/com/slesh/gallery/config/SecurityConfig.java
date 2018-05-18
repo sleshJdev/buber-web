@@ -141,7 +141,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         protected void successfulAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res,
                                                 FilterChain chain,
-                                                Authentication auth) throws IOException {
+                                                Authentication auth) {
             String token = Jwts.builder()
                 .setSubject(((User) auth.getPrincipal()).getUsername())
                 .setExpiration(Date.from(Instant.now().plusMillis(EXPIRATION_TIME)))
