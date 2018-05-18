@@ -6,7 +6,6 @@
 </template>
 
 <script>
-  import Times from './utils/Times';
   import Http from './utils/Http';
   import AdSearch from './AdSearch';
   import AdsGrid from './AdsGrid';
@@ -30,16 +29,9 @@
         return Http.isSignedIn();
       },
       search(query) {
-        return Http.doGet(`/api/ads?name=${query.name || ''}&address=${query.address || ''}`)
-          .then((data) => {
-            // eslint-disable-next-line
-            const now = new Date();
-            // eslint-disable-next-line
-            this.ads = data.content.filter((it) => {
-              const endDate = Times.endAdDate(it.createdOn);
-              return endDate >= now;
-            });
-          });
+        return Http.fetchAds(query).then((ads) => {
+          this.ads = ads;
+        });
       },
     },
   };
