@@ -74,7 +74,7 @@ public class AdController {
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = "25") int size,
         @RequestParam(required = false, defaultValue = "desc") String direction,
-        @RequestParam(required = false, defaultValue = "createdOn") String property,
+        @RequestParam(required = false, defaultValue = "createdOn") String sortBy,
         @RequestParam(required = false, defaultValue = "") String ownerId
     ) {
         Ad probe = new Ad();
@@ -92,7 +92,7 @@ public class AdController {
             }).orElse(matcher);
 
         Example<Ad> example = Example.of(probe, finalMatcher);
-        Sort sort = Sort.by(Sort.Direction.fromString(direction), property);
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         PageRequest pageable = PageRequest.of(page, size, sort);
 
         return adRepository.findAll(example, pageable);
