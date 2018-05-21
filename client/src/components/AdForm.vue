@@ -14,6 +14,7 @@
           <b-form-input id="form-name"
                         size="sm"
                         type="text"
+                        accept="image/*"
                         v-model="form.name"
                         required
                         placeholder="Enter your phone number">
