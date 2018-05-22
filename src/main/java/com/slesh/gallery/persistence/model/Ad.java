@@ -14,6 +14,7 @@ public class Ad {
     private String id;
     private String name;
     private String tel;
+    private String birthday;
     private Location location;
     private String description;
     private String createdOn;
@@ -30,12 +31,7 @@ public class Ad {
 
     @JsonGetter("ownerName")
     public String getOwnerName() {
-        return owner.getPassword();
-    }
-
-    @JsonGetter("address")
-    public String getAddress() {
-        return location.getAddress();
+        return owner.getUsername();
     }
 
     @JsonIgnore

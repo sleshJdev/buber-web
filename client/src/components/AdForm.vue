@@ -14,7 +14,6 @@
           <b-form-input id="form-name"
                         size="sm"
                         type="text"
-                        accept="image/*"
                         v-model="form.name"
                         required
                         placeholder="Enter your phone number">
@@ -31,6 +30,19 @@
                         v-model="form.tel"
                         required
                         placeholder="Enter your phone number">
+          </b-form-input>
+        </b-form-group>
+        <b-form-group id="form-group-birthday"
+                      label="Birthday:"
+                      label-for="form-group-birthday"
+                      description="When you born?"
+                      horizontal>
+          <b-form-input id="form-name"
+                        size="sm"
+                        type="date"
+                        v-model="form.birthday"
+                        required
+                        placeholder="You birthfay date">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-group-location"
@@ -96,8 +108,9 @@
     data() {
       return {
         form: {
-          tel: null,
           name: null,
+          tel: null,
+          birthday: null,
           location: null,
           banner: null,
           description: null,
@@ -114,8 +127,9 @@
       onSubmit() {
         const formData = new FormData();
         formData.append('ad', new Blob([JSON.stringify({
-          tel: this.form.tel,
           name: this.form.name,
+          tel: this.form.tel,
+          birthday: this.form.birthday,
           location: this.form.location,
           description: this.form.description,
         })], {
