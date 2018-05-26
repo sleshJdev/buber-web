@@ -9,7 +9,7 @@
       </b-card-body>
       <b-card-footer>
         <small class="text-muted">
-          Location: {{ad.address || 'Undefined'}}<br/>
+          Location: {{ad.location.address || 'Undefined'}}<br/>
           <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
         </small>
       </b-card-footer>
