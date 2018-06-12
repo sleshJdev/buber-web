@@ -104,16 +104,17 @@ public class AdController {
             new RuntimeException(String.format("Ad[id=%s] not found", id)));
 
         File file = new File(bannersDir, ad.getBannerKey());
+        String path = file.toString();
+        String subtype = "*";
+        int dot = path.lastIndexOf('.');
+        if (dot != -1) {
+            subtype = path.substring(dot + 1).toLowerCase();
+        }
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentLengthLong(ad.getBanner().getSize());
+        response.setContentType(MediaType.valueOf("image/" + subtype).toString());
+
         try {
-            String path = file.toString();
-            String subtype = "*";
-            int dot = path.lastIndexOf('.');
-            if (dot != -1) {
-                subtype = path.substring(dot + 1).toLowerCase();
-            }
-            response.setStatus(HttpStatus.OK.value());
-            response.setContentLengthLong(ad.getBanner().getSize());
-            response.setContentType(MediaType.valueOf("image/" + subtype).toString());
             Files.copy(file.toPath(), response.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException("Couldn't read file " + file);
