@@ -7,12 +7,12 @@
       </small>
     </p>
     <div class="row justify-content-center">
-      <b-form class="col-4" @submit.prevent="onSubmit">
+      <b-form class="col-lg-4 col-md-4" @submit.prevent="onSubmit">
         <b-input-group class="mb-2">
-          <b-input placeholder="Username or email" v-model="credentials.username"/>
+          <b-input placeholder="Username or email" v-model="credentials.username"></b-input>
         </b-input-group>
         <b-input-group class="mb-2">
-          <b-input type="password" placeholder="Password" v-model="credentials.password"/>
+          <b-input type="password" placeholder="Password" v-model="credentials.password"></b-input>
         </b-input-group>
         <p v-if="signIn">
           Don't have an account, then
