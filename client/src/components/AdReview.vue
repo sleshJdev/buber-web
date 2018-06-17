@@ -11,8 +11,6 @@
           <span class="text-info">Location</span> : {{ad.location.address}}
         </p>
         <p>
-        </p>
-        <p>
           <span class="text-info">Description</span> {{ad.description}}
         </p>
         <b-img :src="`/api/ads/${ad.id}/banner`" fluid-grow></b-img>
