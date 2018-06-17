@@ -18,7 +18,7 @@
         <b-img :src="`/api/ads/${ad.id}/banner`" fluid-grow></b-img>
       </b-media>
     </b-card>
-    <p class="text-info" v-if="adsRes.ads.length">
+    <p class="text-info mt-3" v-if="adsRes.ads.length">
       More ads from this user
       ({{`${adsRes.count} of ${adsRes.total}`}}):
     </p>
