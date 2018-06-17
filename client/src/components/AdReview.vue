@@ -5,7 +5,8 @@
         <h5 class="mt-0"><span class="text-info">{{ad.name || 'Anonymous'}}</span> profile</h5>
         <p>
           <span class="text-info">Age</span> : {{getAgeYears(ad.birthday)}} years
-          <span class="text-info">Tel</span> : <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
+          <span class="text-info">Tel</span> :
+          <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
         </p>
         <p>
           <span class="text-info">Created By</span> : {{ad.ownerName || 'Anonymous'}}
@@ -22,17 +23,17 @@
       More ads from this user
       ({{`${adsRes.count} of ${adsRes.total}`}}):
     </p>
-    <ads-grid :ads="adsRes.ads" :compact="true"></ads-grid>
+    <ads :ads="adsRes.ads" :compact="false"></ads>
   </div>
 </template>
 
 <script>
   import Times from './utils/Times';
   import Http from './utils/Http';
-  import AdsGrid from './AdsGrid';
+  import Ads from './Ads';
 
   export default {
-    components: { AdsGrid },
+    components: { Ads },
     name: 'ad-review',
     data() {
       return {
@@ -74,5 +75,4 @@
 </script>
 
 <style scoped>
-
 </style>
