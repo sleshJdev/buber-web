@@ -19,5 +19,5 @@ export default {
     const nowYear = new Date().getFullYear();
     const birthdayDate = new Date(birthdayUtcString);
     return nowYear - birthdayDate.getFullYear();
-  }
+  },
 };
