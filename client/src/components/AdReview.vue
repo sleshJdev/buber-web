@@ -2,12 +2,14 @@
   <div v-if="!!ad">
     <b-card>
       <b-media>
-        <h5 class="mt-0">Ad Details</h5>
+        <h5 class="mt-0"><span class="text-info">{{ad.name || 'Anonymous'}}</span> profile</h5>
         <p>
-          <span class="text-info">Title</span> : {{ad.name || 'Anonymous'}}
+          <span class="text-info">Age</span> : {{getAgeYears(ad.birthday)}} years
+          <span class="text-info">Tel</span> : <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
+        </p>
+        <p>
           <span class="text-info">Created By</span> : {{ad.ownerName || 'Anonymous'}}
           <span class="text-info">Created On</span> : {{formatDate(ad.createdOn)}}
-          <span class="text-info">Tel</span> : <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
           <span class="text-info">Location</span> : {{ad.location.address}}
         </p>
         <p>
@@ -46,6 +48,9 @@
       this.fetchAd();
     },
     methods: {
+      getAgeYears(birthdayUtcString) {
+        return Times.computeAgeYears(birthdayUtcString);
+      },
       formatDate(date) {
         return Times.format(date);
       },
