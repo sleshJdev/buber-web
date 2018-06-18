@@ -23,7 +23,6 @@
         this.compact = it.matches;
       });
       this.compact = compact.matches;
-      console.log(`11this.isMobile: ${this.compact}`);
     },
     data() {
       return {
