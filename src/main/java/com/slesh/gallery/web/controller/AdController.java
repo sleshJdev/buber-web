@@ -12,7 +12,6 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,7 +79,7 @@ public class AdController {
     ) {
         Ad probe = new Ad();
         probe.setName(name);
-        probe.setLocation(new Location(address, (GeoJsonPoint) null));
+        probe.setLocation(new Location(address, null));
         ExampleMatcher matcher = ExampleMatcher.matchingAll()
             .withMatcher("name", contains().ignoreCase())
             .withMatcher("location.address", contains().ignoreCase());
