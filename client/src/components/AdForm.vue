@@ -120,7 +120,7 @@
     methods: {
       getAddressData(addressData, placeResultData) {
         this.form.location = {
-          point: placeResultData.geometry.location.toJSON(),
+          placeId: placeResultData.place_id,
           address: placeResultData.formatted_address,
         };
       },
