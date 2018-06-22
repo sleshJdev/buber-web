@@ -3,7 +3,7 @@
     <div class="mt-3">
       <nav-bar></nav-bar>
     </div>
-    <div class="mt-5">
+    <div class="mt-5 mb-5">
       <router-view/>
     </div>
   </b-container>

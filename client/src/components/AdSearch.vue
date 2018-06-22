@@ -1,14 +1,14 @@
 <template>
-  <b-form inline class="mb-3">
+  <b-form inline class="mb-3 pr-5 pl-5">
     <b-form-input type="text"
-                  class="mr-3 col-md-3"
+                  class="col-sm-6 mb-3"
                   v-model="query.name"
                   placeholder="Search by username...">
     </b-form-input>
     <b-form-input type="text"
-                  class="col-md-4"
-                  v-model="query.location"
-                  placeholder="Type location where to search..."
+                  class="col-sm-6 mb-3"
+                  v-model="query.address"
+                  placeholder="Type address where to search..."
                   required>
     </b-form-input>
   </b-form>
@@ -17,12 +17,12 @@
 <script>
   export default {
     name: 'ad-search',
-    props: ['onSearch', 'locations'],
+    props: ['onSearch'],
     data() {
       return {
         query: {
           name: null,
-          location: null,
+          address: null,
         },
       };
     },
