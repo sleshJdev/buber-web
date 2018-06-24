@@ -75,7 +75,6 @@
               this.message = 'Your account was created successfully! Enter a password to login.';
             })
             .catch((response) => {
-              debugger;
               this.success = false;
               this.message = response.status === 400
                 ? 'Such user already exists'
