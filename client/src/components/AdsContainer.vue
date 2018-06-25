@@ -1,5 +1,7 @@
 <template>
-  <vue-swing ref="slider" @throwout="onRemove" :config="config" v-if="compact">
+  <vue-swing ref="slider" @throwout="onRemove"
+             :config="config"
+             v-if="compact">
     <slot></slot>
   </vue-swing>
   <b-card-group columns v-else>
@@ -33,8 +35,8 @@
             VueSwing.Direction.LEFT,
             VueSwing.Direction.RIGHT,
           ],
-          minThrowOutDistance: 100,
-          maxThrowOutDistance: 200,
+          minThrowOutDistance: 50,
+          maxThrowOutDistance: 150,
         },
       };
     },

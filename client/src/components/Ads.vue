@@ -22,7 +22,7 @@
                     :src="`/api/ads/${ad.id}/banner`" bottom></b-card-img>
         <b-card-footer>
           <small class="text-muted">
-            Location: {{ad.location.address || 'Undefined'}}<br/>
+            {{ad.name || 'Anonymous'}} {{getAgeYears(ad.birthday)}}<br/>
             <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
           </small>
         </b-card-footer>
@@ -63,6 +63,9 @@
       };
     },
     methods: {
+      getAgeYears(birthdayUtcString) {
+        return Times.computeAgeYears(birthdayUtcString);
+      },
       onRemove() {
         const ad = this.ads.pop();
         setTimeout(() => this.ads.unshift(ad));
@@ -100,12 +103,10 @@
     box-shadow: 0 0 10px 2px #ffc107;
   }
 
-  .compact-ads {
-    margin-bottom: 1em;
-  }
-
   .compact-ads .card {
     position: absolute;
+    margin-bottom: 1em;
+    margin-top: 1em;
   }
 
   @media (max-width: 576px) {
