@@ -2,6 +2,7 @@
   <div>
     <ad-search :on-search="search"></ad-search>
     <ads :ads="ads" :compact="compact"></ads>
+    <modal></modal>
   </div>
 </template>
 
@@ -9,11 +10,13 @@
   import Http from './utils/Http';
   import AdSearch from './AdSearch';
   import Ads from './Ads';
+  import Modal from './Modal';
 
   export default {
     components: {
       Ads,
       AdSearch,
+      Modal,
     },
     name: 'home',
     mounted() {

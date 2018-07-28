@@ -1,5 +1,6 @@
 <template>
-  <vue-swing ref="slider" @throwout="onRemove"
+  <vue-swing ref="slider"
+             @throwout="onRemove"
              :config="config"
              v-if="compact">
     <slot></slot>
