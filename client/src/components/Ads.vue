@@ -1,12 +1,10 @@
 <template>
-  <ads-container :class="{'compact-ads': compact}"
-                 :ads="ads" :compact="compact"
-                 :onRemove="onRemove">
+  <ads-container :ads="ads" :compact="compact" :onThrowOut="swapCard">
     <b-card v-for="ad in ads" :key="ad.id" tag="article">
       <b-card-body>
-        <b-button block variant="secondary" :size="compact ? 'lg' : 'md'"
+        <b-button block variant="dark" :size="compact ? 'lg' : 'md'"
                   v-if="!shownPhones[ad.id]" @click.stop="showPhone(ad)">
-          Show phone number...
+          Show phone number
         </b-button>
         <div class="text-center">
           <b-link v-if="shownPhones[ad.id]"
@@ -42,23 +40,28 @@
         type: Array,
         required: true,
       },
-      compact: {
-        type: Boolean,
-        default: false,
-      },
+    },
+    mounted() {
+      const compact = window.matchMedia('(max-width: 576px)');
+      compact.addListener((it) => {
+        this.compact = it.matches;
+      });
+      this.compact = compact.matches;
     },
     data() {
       return {
         shownPhones: Object.create(null),
+        compact: false,
       };
     },
     methods: {
       getAgeYears(birthdayUtcString) {
         return Times.computeAgeYears(birthdayUtcString);
       },
-      onRemove() {
+      swapCard() {
         const ad = this.ads.pop();
-        setTimeout(() => this.ads.unshift(ad));
+        const copy = { ...ad };
+        setTimeout(() => this.ads.unshift(copy));
       },
       showPhone(ad) {
         if (!Http.isSignedIn()) {
@@ -93,27 +96,28 @@
     box-shadow: 0 0 10px 2px #ffc107;
   }
 
-  .compact-ads .card {
-    position: absolute;
-    margin-bottom: 1em;
-    margin-top: 1em;
-  }
-
   @media (max-width: 576px) {
-    .compact-ads .card {
-      margin-right: 1em;
+    .card:nth-child(3) {
+      /*top: 2px;*/
+      transform: translate(2px, 2px) rotate(0.4deg);
     }
-  }
 
-  @media (min-width: 576px) {
-    .compact-ads .card {
-      margin-right: 10%;
+    .card:nth-child(2) {
+      /*top: 4px;*/
+      transform: translate(-4px, -2px) rotate(-1deg);
     }
-  }
 
-  @media (min-width: 768px) {
-    .compact-ads .card {
-      margin-right: 7em;
+    .card {
+      position: absolute;
+      margin-top: 1rem;
+    }
+
+    .card-body .btn {
+      border-radius: 0;
+    }
+
+    .card-body {
+      padding: 0;
     }
   }
 </style>

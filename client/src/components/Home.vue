@@ -1,8 +1,8 @@
 <template>
   <div>
     <ad-search :on-search="search"></ad-search>
-    <ads :ads="ads" :compact="compact"></ads>
-    <modal></modal>
+    <ads :ads="ads"></ads>
+    <modals></modals>
   </div>
 </template>
 
@@ -10,33 +10,24 @@
   import Http from './utils/Http';
   import AdSearch from './AdSearch';
   import Ads from './Ads';
-  import Modal from './Modal';
+  import Modals from './Modals';
 
   export default {
+    name: 'home',
     components: {
       Ads,
       AdSearch,
-      Modal,
-    },
-    name: 'home',
-    mounted() {
-      this.search({});
-      const compact = window.matchMedia('(max-width: 768px)');
-      compact.addListener((it) => {
-        this.compact = it.matches;
-      });
-      this.compact = compact.matches;
+      Modals,
     },
     data() {
       return {
         ads: [],
-        compact: false,
       };
     },
+    mounted() {
+      this.search({});
+    },
     methods: {
-      isSignedIn() {
-        return Http.isSignedIn();
-      },
       search(query) {
         return Http.fetchAds(query).then((ads) => {
           this.ads = ads;

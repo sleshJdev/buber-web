@@ -12,7 +12,7 @@
 
 <script>
   export default {
-    name: 'modal',
+    name: 'modals',
   };
 </script>
 
