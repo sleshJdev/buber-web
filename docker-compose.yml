@@ -1,25 +1,26 @@
-version: '3.1'
+version: '3.2'
+
+volumes:
+  buber_mongo_volume:
+
 services:
-  client:
-    build:
-      context: ./client
+  buber_web:
+    image: openjdk:8-jdk-alpine
     ports:
-      - 7333:7333
-    container_name: ad-gallery-client
+      - 8080:8080
+    container_name: buber_backend
     depends_on:
-      - backend
-  backend:
-    build:
-        context: .
-    ports:
-      - 7222:7222
-    container_name: ad-gallery-backend
-    depends_on:
-      - mongo
-  mongo:
-    container_name: ad-gallery-mongo
-    image: mongo
+      - buber_mongo
     volumes:
-      - ./data:/data/db
-    ports:
-      - 27017:27017
+      - type: bind
+        source: ./build
+        target: /opt/buber/build
+    command: java -jar /opt/buber/build/buber-fat-0.0.1.jar --spring.profiles.active=stg
+
+  buber_mongo:
+    image: mongo
+    container_name: buber_mongo
+    volumes:
+      - type: volume
+        source: buber_mongo_volume
+        target: /data/db

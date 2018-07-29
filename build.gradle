@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.slesh'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
 repositories {
@@ -23,6 +23,33 @@ jar {
     manifest {
         attributes 'Main-Class': 'com.slesh.gallery.Application'
     }
+}
+
+task cleanPublic(type: Delete) {
+    delete 'src/main/resources/public'
+}
+
+task buildClient(type: Exec) {
+    workingDir 'client'
+    executable 'yarn'
+    args 'run', 'build'
+}
+
+task copyClient(type: Copy, dependsOn: cleanPublic) {
+    from 'client/dist/'
+    into 'src/main/resources/public/'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Title': 'Buber App',
+                   'Version': version,
+                   'Main-Class': 'com.slesh.gallery.Application'
+    }
+    baseName = project.name + '-fat'
+    destinationDir = buildDir
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 dependencies {
