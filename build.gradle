@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'net.ltgt.apt' version '0.15'
+    id 'org.springframework.boot' version '2.0.3.RELEASE'
 }
 
 group = 'com.slesh'
@@ -18,6 +19,12 @@ ext {
     springBootVersion = '2.0.2.RELEASE'
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.slesh.gallery.Application'
+    }
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
@@ -28,5 +35,5 @@ dependencies {
     testCompile("org.springframework.security:spring-security-test:${springBootVersion}")
     compile("ch.qos.logback:logback-classic:${logbackVersion}")
     compileOnly("org.projectlombok:lombok:${lombockVersion}")
-    apt("org.projectlombok:lombok:${lombockVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombockVersion}")
 }

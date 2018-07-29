@@ -1,42 +1,30 @@
 <template>
-  <div>
-    <ads-container :class="{'compact-ads': compact}"
-                   :ads="ads" :compact="compact"
-                   :onRemove="onRemove">
-      <b-card v-for="ad in ads" :key="ad.id" tag="article">
-        <b-card-body>
-          <b-button block variant="secondary" :size="compact ? 'lg' : 'md'"
-                    v-if="!shownPhones[ad.id]" @click.stop="showPhone(ad)">
-            Show phone number...
-          </b-button>
-          <div class="text-center">
-            <b-link v-if="shownPhones[ad.id]"
-                    class="text-info text-monospace font-weight-bold"
-                    :href="`tel:${ad.tel}`">
-              Call {{ad.tel}}
-            </b-link>
-          </div>
-        </b-card-body>
-        <b-card-img @click="review(ad)"
-                    :class="{'ad-card': !compact}"
-                    :src="`/api/ads/${ad.id}/banner`" bottom></b-card-img>
-        <b-card-footer>
-          <small class="text-muted">
-            Location: {{ad.location.address || 'Undefined'}}<br/>
-            <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
-          </small>
-        </b-card-footer>
-      </b-card>
-    </ads-container>
-    <b-modal ref="unauthorizedModal" title="Need to sign in" size="sm"
-             ok-variant="success" cancel-variant="secondary"
-             cancel-title="Dismiss" ok-title="Sign in"
-             @ok="$router.push({name: 'sign-in'})">
-      <p class="text-center">
-        Please, sign in to review ads and see phone numbers
-      </p>
-    </b-modal>
-  </div>
+  <ads-container :ads="ads" :compact="compact" :onThrowOut="swapCard">
+    <b-card v-for="ad in ads" :key="ad.id" tag="article">
+      <b-card-body>
+        <b-button block variant="dark" :size="compact ? 'lg' : 'md'"
+                  v-if="!shownPhones[ad.id]" @click.stop="showPhone(ad)">
+          Show phone number
+        </b-button>
+        <div class="text-center">
+          <b-link v-if="shownPhones[ad.id]"
+                  class="text-info text-monospace font-weight-bold"
+                  :href="`tel:${ad.tel}`">
+            Call {{ad.tel}}
+          </b-link>
+        </div>
+      </b-card-body>
+      <b-card-img @click="review(ad)"
+                  :class="{'ad-card': !compact}"
+                  :src="`/api/ads/${ad.id}/banner`" bottom></b-card-img>
+      <b-card-footer>
+        <small class="text-muted">
+          {{ad.name || 'Anonymous'}} {{getAgeYears(ad.birthday)}}<br/>
+          <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
+        </small>
+      </b-card-footer>
+    </b-card>
+  </ads-container>
 </template>
 
 <script>
@@ -52,24 +40,32 @@
         type: Array,
         required: true,
       },
-      compact: {
-        type: Boolean,
-        default: false,
-      },
+    },
+    mounted() {
+      const compact = window.matchMedia('(max-width: 576px)');
+      compact.addListener((it) => {
+        this.compact = it.matches;
+      });
+      this.compact = compact.matches;
     },
     data() {
       return {
         shownPhones: Object.create(null),
+        compact: false,
       };
     },
     methods: {
-      onRemove() {
+      getAgeYears(birthdayUtcString) {
+        return Times.computeAgeYears(birthdayUtcString);
+      },
+      swapCard() {
         const ad = this.ads.pop();
-        setTimeout(() => this.ads.unshift(ad));
+        const copy = { ...ad };
+        setTimeout(() => this.ads.unshift(copy));
       },
       showPhone(ad) {
         if (!Http.isSignedIn()) {
-          this.$refs.unauthorizedModal.show();
+          this.$root.$emit('bv::show::modal', 'unauthorizedModal');
           return;
         }
 
@@ -100,29 +96,28 @@
     box-shadow: 0 0 10px 2px #ffc107;
   }
 
-  .compact-ads {
-    margin-bottom: 1em;
-  }
-
-  .compact-ads .card {
-    position: absolute;
-  }
-
   @media (max-width: 576px) {
-    .compact-ads .card {
-      margin-right: 1em;
+    .card:nth-child(3) {
+      /*top: 2px;*/
+      transform: translate(2px, 2px) rotate(0.4deg);
     }
-  }
 
-  @media (min-width: 576px) {
-    .compact-ads .card {
-      margin-right: 10%;
+    .card:nth-child(2) {
+      /*top: 4px;*/
+      transform: translate(-4px, -2px) rotate(-1deg);
     }
-  }
 
-  @media (min-width: 768px) {
-    .compact-ads .card {
-      margin-right: 7em;
+    .card {
+      position: absolute;
+      margin-top: 1rem;
+    }
+
+    .card-body .btn {
+      border-radius: 0;
+    }
+
+    .card-body {
+      padding: 0;
     }
   }
 </style>
