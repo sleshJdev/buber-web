@@ -30,7 +30,7 @@
         config: {
           throwOutConfidence: (xOffset, yOffset, element) => {
             const confidence = VueSwing.Card.throwOutConfidence(xOffset, yOffset, element);
-            return Math.min(confidence * 2, 1);
+            return Math.min(confidence * 3, 1);
           },
           isThrowOut: (xOffset, yOffset, element, throwOutConfidence) => {
             if (throwOutConfidence === 1) {

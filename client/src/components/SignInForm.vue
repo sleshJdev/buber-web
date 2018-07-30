@@ -6,7 +6,7 @@
         {{message}}
       </small>
     </p>
-    <div class="row justify-content-center">
+    <div class="sign-in-form row justify-content-center">
       <b-form class="col-lg-4 col-md-4" @submit.prevent="onSubmit">
         <b-input-group class="mb-2">
           <b-input placeholder="Username or email" v-model="credentials.username"></b-input>
@@ -22,9 +22,7 @@
           Have an account, then
           <span class="anchor text-info" @click="signIn = true">Sign In!</span>
         </p>
-        <div class="row justify-content-end pr-3">
-          <b-button type="submit" variant="primary">{{label}}</b-button>
-        </div>
+        <b-button type="submit" class="float-sm-right" variant="primary">{{label}}</b-button>
       </b-form>
     </div>
   </div>
@@ -90,4 +88,16 @@
   .anchor {
     cursor: pointer;
   }
+
+  @media (max-width: 576px) {
+    .sign-in-form {
+      padding: 1em;
+    }
+
+    .sign-in-form button[type=submit] {
+      display: block;
+      width: 100%;
+    }
+  }
+
 </style>
