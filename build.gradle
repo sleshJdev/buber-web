@@ -34,6 +34,11 @@ task copyClient(type: Copy, dependsOn: cleanPublic) {
     into 'src/main/resources/public/'
 }
 
+task buildAll(dependsOn: bootJar) {
+    copyClient.dependsOn(buildClient)
+    bootJar.dependsOn(copyClient)
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
