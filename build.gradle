@@ -34,7 +34,10 @@ task copyClient(type: Copy, dependsOn: cleanPublic) {
     into 'src/main/resources/public/'
 }
 
-task buildAll(dependsOn: bootJar) {
+copyClient.mustRunAfter(buildClient)
+bootJar.mustRunAfter(copyClient)
+
+task buildAll(dependsOn: [buildClient, copyClient, bootJar]) {
     copyClient.dependsOn(buildClient)
     bootJar.dependsOn(copyClient)
 }
