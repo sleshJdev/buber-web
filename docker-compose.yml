@@ -2,6 +2,7 @@ version: '3.2'
 
 volumes:
   buber_mongo_volume:
+  buber_ads_volume:
 
 services:
   buber_web:
@@ -15,6 +16,9 @@ services:
       - type: bind
         source: ./build
         target: /buber
+      - type: volume
+        source: buber_ads_volume
+        target: /root/.buber
     command: java -jar /buber/libs/buber-0.0.1.jar --spring.profiles.active=stg
 
   buber_mongo:

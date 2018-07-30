@@ -52,7 +52,7 @@ public class AdController {
         this.userRepository = userRepository;
 
         String userHome = System.getProperty("user.home");
-        bannersDir = Paths.get(userHome, ".gallery/banners").toFile();
+        bannersDir = Paths.get(userHome, ".buber/ads").toFile();
         if (!bannersDir.exists()) {
             if (!bannersDir.mkdirs()) {
                 throw new RuntimeException(String.format("Could create %s directory", bannersDir));
