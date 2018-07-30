@@ -126,7 +126,9 @@ export default class Auth {
     Object.entries(params).forEach((pair) => {
       const param = pair[0];
       const value = pair[1];
-      if (value !== null && value !== undefined) {
+      if (value !== null &&
+          value !== undefined &&
+          value.trim() !== '') {
         url += `${first ? '?' : '&'}${param}=${value}`;
         first = false;
       }
