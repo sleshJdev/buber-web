@@ -2,11 +2,11 @@
   <ads-container :ads="ads" :compact="compact" :onThrowOut="swapCard">
     <b-card v-for="ad in ads" :key="ad.id" tag="article">
       <b-card-body>
-        <b-button block variant="dark" :size="compact ? 'lg' : 'md'"
+        <b-button block variant="dark" :size="compact ? 'lg' : 'sm'"
                   v-if="!shownPhones[ad.id]" @click.stop="showPhone(ad)">
           Show phone number
         </b-button>
-        <div class="text-center">
+        <div class="text-center phone-number">
           <b-link v-if="shownPhones[ad.id]"
                   class="text-info text-monospace font-weight-bold"
                   :href="`tel:${ad.tel}`">
@@ -59,9 +59,8 @@
         return Times.computeAgeYears(birthdayUtcString);
       },
       swapCard() {
-        const ad = this.ads.pop();
-        const copy = { ...ad };
-        setTimeout(() => this.ads.unshift(copy));
+        const topAd = this.ads.pop();
+        this.ads.unshift(topAd);
       },
       showPhone(ad) {
         if (!Http.isSignedIn()) {
@@ -96,6 +95,24 @@
     box-shadow: 0 0 10px 2px #ffc107;
   }
 
+  @media (max-width: 992px) {
+    .phone-number {
+      padding: 0.5em;
+    }
+
+    .card-body .btn {
+      border-radius: 0;
+    }
+
+    .card-body {
+      padding: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+
+  }
+
   @media (max-width: 576px) {
     .card:nth-child(3) {
       /*top: 2px;*/
@@ -110,14 +127,6 @@
     .card {
       position: absolute;
       margin-top: 1rem;
-    }
-
-    .card-body .btn {
-      border-radius: 0;
-    }
-
-    .card-body {
-      padding: 0;
     }
   }
 </style>
