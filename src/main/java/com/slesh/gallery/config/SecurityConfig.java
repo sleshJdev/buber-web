@@ -6,6 +6,7 @@ import com.slesh.gallery.persistence.model.ApplicationUser;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -52,15 +53,23 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final long EXPIRATION_TIME = 864_000_000; // 10 days
-    private static final String HEADER_STRING = "X-Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String SECRET = "super-secret-key";
+    private final long tokenExpirationTime;
+    private final String tokenHeader;
+    private final String tokenPrefix;
+    private final String secret;
     private final ApplicationUserRepository applicationUserRepository;
     private final ObjectMapper objectMapper;
 
-    public SecurityConfig(ApplicationUserRepository applicationUserRepository,
+    public SecurityConfig(@Value("${app.security.token-expiration-time}") long tokenExpirationTime,
+                          @Value("${app.security.token-header}") String tokenHeader,
+                          @Value("${app.security.token-prefix}") String tokenPrefix,
+                          @Value("${app.security.secret-key}") String secret,
+                          ApplicationUserRepository applicationUserRepository,
                           ObjectMapper objectMapper) {
+        this.tokenExpirationTime = tokenExpirationTime;
+        this.tokenHeader = tokenHeader;
+        this.tokenPrefix = tokenPrefix;
+        this.secret = secret;
         this.applicationUserRepository = applicationUserRepository;
         this.objectMapper = objectMapper;
     }
@@ -79,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .map(Enum::toString)
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList())))
-                .orElseThrow(() -> new UsernameNotFoundException("User with key" + key + "not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User with key " + key + " not found"));
         };
     }
 
@@ -144,10 +153,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 Authentication auth) {
             String token = Jwts.builder()
                 .setSubject(((User) auth.getPrincipal()).getUsername())
-                .setExpiration(Date.from(Instant.now().plusMillis(EXPIRATION_TIME)))
-                .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
+                .setExpiration(Date.from(Instant.now().plusMillis(tokenExpirationTime)))
+                .signWith(SignatureAlgorithm.HS512, secret.getBytes())
                 .compact();
-            res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+            res.addHeader(tokenHeader, tokenPrefix + token);
         }
     }
 
@@ -158,8 +167,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                         FilterChain chain)
             throws ServletException, IOException {
 
-            String header = req.getHeader(HEADER_STRING);
-            if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+            String header = req.getHeader(tokenHeader);
+            if (header == null || !header.startsWith(tokenPrefix)) {
                 chain.doFilter(req, res);
                 return;
             }
@@ -170,10 +179,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
-            return Optional.ofNullable(req.getHeader(HEADER_STRING))
+            return Optional.ofNullable(req.getHeader(tokenHeader))
                 .map(token -> Jwts.parser()
-                    .setSigningKey(SECRET.getBytes())
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .setSigningKey(secret.getBytes())
+                    .parseClaimsJws(token.replace(tokenPrefix, ""))
                     .getBody()
                     .getSubject())
                 .map(user -> new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>()))
