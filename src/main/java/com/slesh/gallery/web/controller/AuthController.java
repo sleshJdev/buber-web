@@ -21,14 +21,12 @@ import java.util.Collections;
 public class AuthController {
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ObjectMapper objectMapper;
 
     public AuthController(ApplicationUserRepository applicationUserRepository,
                           PasswordEncoder passwordEncoder,
                           ObjectMapper objectMapper) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/sign-up")
