@@ -7,6 +7,8 @@ volumes:
 services:
   buber_web:
     image: openjdk:8-jdk-alpine
+    expose:
+      - 8080
     ports:
       - 8888:8080
     container_name: buber_backend
