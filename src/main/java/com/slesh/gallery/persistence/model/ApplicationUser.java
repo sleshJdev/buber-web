@@ -19,7 +19,6 @@ public class ApplicationUser {
     private String id;
     @Indexed(unique = true)
     private String username;
-    @Indexed(unique = true)
     @JsonIgnore
     private String password;
     private List<Role> roles;
