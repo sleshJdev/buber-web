@@ -70,7 +70,7 @@ public class AdController {
     @GetMapping
     public Page<Ad> ads(
         @RequestParam(required = false, defaultValue = "") String name,
-        @RequestParam(required = false, defaultValue = "") String address,
+        @RequestParam(required = false, defaultValue = "") String city,
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = "25") int size,
         @RequestParam(required = false, defaultValue = "desc") String direction,
@@ -79,10 +79,10 @@ public class AdController {
     ) {
         Ad probe = new Ad();
         probe.setName(name);
-        probe.setLocation(new Location(address, null));
+        probe.setCity(city);
         ExampleMatcher matcher = ExampleMatcher.matchingAll()
             .withMatcher("name", contains().ignoreCase())
-            .withMatcher("location.address", contains().ignoreCase());
+            .withMatcher("city", contains().ignoreCase());
         ExampleMatcher finalMatcher = Optional.of(ownerId)
             .filter(StringUtils::hasText)
             .flatMap(userRepository::findById)

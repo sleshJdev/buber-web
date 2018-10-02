@@ -4,26 +4,32 @@
       <b-media>
         <h5 class="mt-0"><span class="text-info">{{ad.name || 'Anonymous'}}</span> profile</h5>
         <p>
-          <span class="text-info">Age</span> : {{getAgeYears(ad.birthday)}} years
+          <span class="text-info">Age</span> : {{ad.age}} years
+          <span class="text-info">Price</span> : {{ad.price}}
           <span class="text-info">Tel</span> :
           <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
         </p>
         <p>
-          <span class="text-info">Created By</span> : {{ad.ownerName || 'Anonymous'}}
+          <span class="text-info">Created By</span> : {{ad.name || 'Anonymous'}}
           <span class="text-info">Created On</span> : {{formatDate(ad.createdOn)}}
-          <span class="text-info">Location</span> : {{ad.location.address}}
+          <span class="text-info">Location</span> : {{ad.city}}
         </p>
         <p>
           <span class="text-info">Description</span> {{ad.description}}
         </p>
-        <b-img :src="`/api/ads/${ad.id}/banner`" fluid-grow></b-img>
+        <b-img :src="ad.avatar" fluid-grow></b-img>
       </b-media>
     </b-card>
-    <p class="text-info mt-3" v-if="adsRes.ads.length">
-      More ads from this user
-      ({{`${adsRes.count} of ${adsRes.total}`}}):
-    </p>
-    <ads :ads="adsRes.ads" :compact="false"></ads>
+    <div v-if="ad.photos.length">
+      <p class="text-info mt-3">
+        More photos from this user
+      </p>
+      <b-card-group columns>
+        <b-card-img v-for="photo in ad.photos" :key="photo"
+                    :src="`${photo.replace('/ths/', '/main/')}`">
+        </b-card-img>
+      </b-card-group>
+    </div>
   </div>
 </template>
 
@@ -38,11 +44,6 @@
     data() {
       return {
         ad: null,
-        adsRes: {
-          ads: [],
-          count: 0,
-          total: 0,
-        },
       };
     },
     created() {
@@ -58,17 +59,7 @@
       fetchAd() {
         const adId = this.$route.query.id;
         return Http.doGet(`/api/ads/${adId}`)
-          .then((ad) => {
-            this.ad = ad;
-            return Http.doGet(`/api/ads?ownerId=${ad.ownerId}`);
-          })
-          .then((response) => {
-            this.adsRes = {
-              ads: response.content.filter(ad => ad.id !== this.ad.id),
-              count: response.numberOfElements - 1,
-              total: response.totalElements - 1,
-            };
-          });
+          .then((ad) => this.ad = ad);
       },
     },
   };

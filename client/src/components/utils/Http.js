@@ -114,7 +114,7 @@ export default class Auth {
     return this.doGet(url).then((data) => {
       const now = new Date();
       return data.content.filter((it) => {
-        const endDate = Times.endAdDate(it.createdOn);
+        const endDate = Times.endAdDate(it.createdOn || new Date());
         return endDate >= now;
       });
     });

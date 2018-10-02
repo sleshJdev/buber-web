@@ -16,10 +16,10 @@
       </b-card-body>
       <b-card-img @click="review(ad)"
                   :class="{'ad-card': !compact}"
-                  :src="`/api/ads/${ad.id}/banner`" bottom></b-card-img>
+                  :src="ad.avatar" bottom></b-card-img>
       <b-card-footer>
         <small class="text-muted">
-          {{ad.name || 'Anonymous'}} {{getAgeYears(ad.birthday)}}<br/>
+          {{ad.name || 'Anonymous'}} {{ad.age}}<br/>
           <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
         </small>
       </b-card-footer>
