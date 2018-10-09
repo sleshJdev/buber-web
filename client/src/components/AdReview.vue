@@ -2,16 +2,19 @@
   <div v-if="!!ad">
     <b-card>
       <b-media>
-        <h5 class="mt-0"><span class="text-info">{{ad.name || 'Anonymous'}}</span> profile</h5>
+        <h5 class="mt-0 mb-2"><span class="text-info">{{ad.name || 'Anonymous'}}</span></h5>
         <p>
-          <span class="text-info">Age</span> : {{ad.age}} years
-          <span class="text-info">Price</span> : {{ad.price}}
+          {{ad.tagline}}
+        </p>
+        <p>
+          <span class="text-info">Age</span> : {{resolveAge(ad)}} years
+          <span class="text-info">Price</span> : {{ad.price}}$
           <span class="text-info">Tel</span> :
           <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
         </p>
         <p>
           <span class="text-info">Created By</span> : {{ad.name || 'Anonymous'}}
-          <span class="text-info">Created On</span> : {{formatDate(ad.createdOn)}}
+          <span v-if="ad.createdOn" class="text-info">Created On</span> : {{format(ad.createdOn)}}
           <span class="text-info">Location</span> : {{ad.city}}
         </p>
         <p>
@@ -20,7 +23,7 @@
         <b-img :src="ad.avatar" fluid-grow></b-img>
       </b-media>
     </b-card>
-    <div v-if="ad.photos.length">
+    <div v-if="ad.photos && ad.photos.length">
       <p class="text-info mt-3">
         More photos from this user
       </p>
@@ -39,7 +42,7 @@
   import Ads from './Ads';
 
   export default {
-    components: { Ads },
+    components: { Ads, Times },
     name: 'ad-review',
     data() {
       return {
@@ -50,16 +53,18 @@
       this.fetchAd();
     },
     methods: {
-      getAgeYears(birthdayUtcString) {
-        return Times.computeAgeYears(birthdayUtcString);
+      resolveAge(ad) {
+        return ad.age || Times.computeAgeYears(ad.birthday);
       },
-      formatDate(date) {
-        return Times.format(date);
+      format(dateUtcString) {
+        return Times.format(dateUtcString);
       },
       fetchAd() {
         const adId = this.$route.query.id;
         return Http.doGet(`/api/ads/${adId}`)
-          .then((ad) => this.ad = ad);
+          .then((ad) => {
+            this.ad = ad;
+          });
       },
     },
   };

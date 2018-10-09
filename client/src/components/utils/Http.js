@@ -1,5 +1,3 @@
-import Times from './Times';
-
 const HEADER_STRING = 'X-Authorization';
 const AUTH_TOKEN_KEY = 'buber.auth.token';
 const CONTENT_TYPE_HEADER = 'Content-Type';
@@ -111,13 +109,7 @@ export default class Auth {
 
   static fetchAds(params) {
     const url = this.buildUrl('/api/ads', params);
-    return this.doGet(url).then((data) => {
-      const now = new Date();
-      return data.content.filter((it) => {
-        const endDate = Times.endAdDate(it.createdOn || new Date());
-        return endDate >= now;
-      });
-    });
+    return this.doGet(url);
   }
 
   static buildUrl(baseUrl, params) {

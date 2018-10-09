@@ -1,7 +1,7 @@
 <template>
   <div>
     <ad-search :on-search="search"></ad-search>
-    <ads :ads="ads"></ads>
+    <ads :ads="adsResponse && adsResponse.content || []"></ads>
     <modals></modals>
   </div>
 </template>
@@ -21,7 +21,7 @@
     },
     data() {
       return {
-        ads: [],
+        adsResponse: null,
       };
     },
     mounted() {
@@ -29,9 +29,10 @@
     },
     methods: {
       search(query) {
-        return Http.fetchAds(query).then((ads) => {
-          this.ads = ads;
-        });
+        return Http.fetchAds(query)
+          .then((adsResponse) => {
+            this.adsResponse = adsResponse;
+          });
       },
     },
   };

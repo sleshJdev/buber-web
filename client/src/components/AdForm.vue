@@ -32,6 +32,19 @@
                         placeholder="Enter your phone number">
           </b-form-input>
         </b-form-group>
+        <b-form-group id="form-group-price"
+                      label="Price $/h:"
+                      label-for="form-price"
+                      description="Your dollar price per hour."
+                      horizontal>
+          <b-form-input id="form-price"
+                        type="number"
+                        size="sm"
+                        v-model="form.price"
+                        required
+                        placeholder="Enter your price per hour, $">
+          </b-form-input>
+        </b-form-group>
         <b-form-group id="form-group-birthday"
                       label="Birthday:"
                       label-for="form-group-birthday"
@@ -52,6 +65,8 @@
           <vue-google-autocomplete
             id="map"
             size="sm"
+            types="(cities)"
+            country="ca"
             ref="location"
             :enable-geolocation="true"
             classname="form-control form-control-sm"
@@ -65,14 +80,14 @@
                       label-for="form-banner"
                       horizontal>
           <b-form-file id="form-banner"
-                       ref="banner"
+                       ref="avatar"
                        size="sm"
                        class="form-control form-control-sm"
-                       :state="Boolean(form.banner)"
-                       v-model="form.banner"
+                       :state="Boolean(form.avatar)"
+                       v-model="form.avatar"
                        accept="image/*"
                        required
-                       placeholder="Choose or drag&drop a banner for your ad">
+                       placeholder="Avatar">
           </b-form-file>
         </b-form-group>
         <b-form-group id="form-goup-description"
@@ -111,18 +126,17 @@
           name: null,
           tel: null,
           birthday: null,
-          location: null,
-          banner: null,
+          city: null,
+          price: null,
+          avatar: null,
           description: null,
         },
       };
     },
     methods: {
+      // eslint-disable-next-line
       getAddressData(addressData, placeResultData) {
-        this.form.location = {
-          placeId: placeResultData.place_id,
-          address: placeResultData.formatted_address,
-        };
+        this.form.city = addressData.locality;
       },
       onSubmit() {
         const formData = new FormData();
@@ -130,15 +144,16 @@
           name: this.form.name,
           tel: this.form.tel,
           birthday: this.form.birthday,
-          location: this.form.location,
+          location: this.form.city,
+          price: this.form.price,
           description: this.form.description,
         })], {
           type: 'application/json',
         }));
-        formData.append('file', this.form.banner);
+        formData.append('file', this.form.avatar);
 
-        Http.doPost('/api/ads', formData, false).then(
-          () => this.$router.push('/'));
+        Http.doPost('/api/ads', formData, false)
+          .then(() => this.$router.push('/'));
       },
       onReset(evt) {
         evt.preventDefault();
@@ -147,7 +162,7 @@
         this.form.name = null;
         this.form.description = null;
         this.$refs.location.clear();
-        this.$refs.banner.reset();
+        this.$refs.avatar.reset();
       },
     },
   };

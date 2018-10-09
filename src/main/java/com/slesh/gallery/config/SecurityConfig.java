@@ -110,7 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
             .antMatchers(HttpMethod.GET, "/api/ads").permitAll()
             .antMatchers(HttpMethod.GET, "/api/ads/review").authenticated()
-            .antMatchers(HttpMethod.GET, "/api/ads/*/banner").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/ads/picture/*").permitAll()
             .antMatchers("/api/**").authenticated().and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .addFilterAt(new TokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

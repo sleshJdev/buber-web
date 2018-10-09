@@ -3,8 +3,6 @@ package com.slesh.gallery.web.controller;
 
 import com.slesh.gallery.persistence.model.Ad;
 import com.slesh.gallery.persistence.model.ApplicationUser;
-import com.slesh.gallery.persistence.model.Banner;
-import com.slesh.gallery.persistence.model.Location;
 import com.slesh.gallery.persistence.repository.AdRepository;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
 import org.springframework.data.domain.Example;
@@ -31,10 +29,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact;
@@ -60,6 +62,14 @@ public class AdController {
         }
     }
 
+    @GetMapping("/cities")
+    public Set<String> getCities() {
+        return adRepository.getCities().stream()
+            .map(AdRepository.City::value)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Ad> ad(@PathVariable String id) {
         return adRepository.findById(id)
@@ -78,11 +88,15 @@ public class AdController {
         @RequestParam(required = false, defaultValue = "") String ownerId
     ) {
         Ad probe = new Ad();
-        probe.setName(name);
-        probe.setCity(city);
+        if (StringUtils.hasText(name)) {
+            probe.setName(name);
+        }
+        if (StringUtils.hasText(city)) {
+            probe.setCity(city);
+        }
         ExampleMatcher matcher = ExampleMatcher.matchingAll()
             .withMatcher("name", contains().ignoreCase())
-            .withMatcher("city", contains().ignoreCase());
+            .withMatcher("city", exact());
         ExampleMatcher finalMatcher = Optional.of(ownerId)
             .filter(StringUtils::hasText)
             .flatMap(userRepository::findById)
@@ -98,12 +112,9 @@ public class AdController {
         return adRepository.findAll(example, pageable);
     }
 
-    @GetMapping(path = "/{id}/banner")
-    public void getBanner(@PathVariable String id, HttpServletResponse response) {
-        Ad ad = adRepository.findById(id).orElseThrow(() ->
-            new RuntimeException(String.format("Ad[id=%s] not found", id)));
-
-        File file = new File(bannersDir, ad.getBannerKey());
+    @GetMapping(path = "/picture/{key}")
+    public void getPicture(@PathVariable String key, HttpServletResponse response) {
+        File file = new File(bannersDir, key);
         String path = file.toString();
         String subtype = "*";
         int dot = path.lastIndexOf('.');
@@ -111,7 +122,7 @@ public class AdController {
             subtype = path.substring(dot + 1).toLowerCase();
         }
         response.setStatus(HttpStatus.OK.value());
-        response.setContentLengthLong(ad.getBanner().getSize());
+        response.setContentLengthLong(file.length());
         response.setContentType(MediaType.valueOf("image/" + subtype).toString());
 
         try {
@@ -123,15 +134,17 @@ public class AdController {
 
     @PostMapping
     public Ad save(@RequestPart Ad ad, @RequestPart MultipartFile file, Principal principal) {
-        ad.setCreatedOn(DateTimeFormatter.ISO_DATE_TIME.format(ZonedDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
-        ad.setBanner(new Banner(file.getOriginalFilename(), file.getContentType(), file.getSize()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ad.setCreatedOn(formatter.format(LocalDateTime.now(Clock.systemUTC())));
+        String pictureKey = UUID.randomUUID().toString() + file.getOriginalFilename();
+        ad.setAvatar("/api/ads/picture/" + pictureKey);
 
         ApplicationUser currentUser = userRepository.findByUsername(principal.getName());
         ad.setOwner(currentUser);
 
         Ad instance = adRepository.save(ad);
         try {
-            file.transferTo(new File(bannersDir, instance.getBannerKey()));
+            file.transferTo(new File(bannersDir, pictureKey));
         } catch (IOException e) {
             throw new RuntimeException("Couldn't process file", e);
         }
