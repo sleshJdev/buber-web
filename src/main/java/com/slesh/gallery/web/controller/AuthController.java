@@ -23,8 +23,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(ApplicationUserRepository applicationUserRepository,
-                          PasswordEncoder passwordEncoder,
-                          ObjectMapper objectMapper) {
+                          PasswordEncoder passwordEncoder) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
     }
