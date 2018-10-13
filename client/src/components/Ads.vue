@@ -19,7 +19,8 @@
                   :src="ad.avatar" bottom></b-card-img>
       <b-card-footer>
         <small class="text-muted">
-          {{ad.name || 'Anonymous'}} {{ad.age}}, {{ad.price}}$<br/>
+          {{ad.name || 'Anonymous'}} {{ad.age}},
+          {{!!ad.price ? ad.price + '$' : 'Not specified'}}<br/>
           <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
         </small>
       </b-card-footer>
