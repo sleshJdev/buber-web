@@ -3,12 +3,11 @@
     <b-form-input type="text"
                   class="col-sm-6 mb-md-1"
                   v-model="query.name"
-                  placeholder="Search by name, description...">
+                  placeholder="Search by name...">
     </b-form-input>
     <b-form-select class="col-sm-6 mb-md-1"
                    v-model="query.city"
-                   :options="cities"
-                   placeholder="Search by name, description...">
+                   :options="cities">
     </b-form-select>
   </b-form>
 </template>
