@@ -1,7 +1,9 @@
 <template>
   <div>
     <ad-search :on-search="search"></ad-search>
-    <ads :ads="adsResponse && adsResponse.content || []"></ads>
+    <infinity-scroll :on-ending="loadMoreAds">
+      <ads :ads="loadedAds"></ads>
+    </infinity-scroll>
     <modals></modals>
   </div>
 </template>
@@ -11,28 +13,47 @@
   import AdSearch from './AdSearch';
   import Ads from './Ads';
   import Modals from './Modals';
+  import InfinityScroll from './InfinityScroll';
 
   export default {
     name: 'home',
     components: {
-      Ads,
+      InfinityScroll,
       AdSearch,
+      Ads,
       Modals,
     },
     data() {
       return {
-        adsResponse: null,
+        query: {},
+        loadedAds: [],
+        adsResponse: {},
       };
     },
     mounted() {
       this.search({});
     },
     methods: {
+      loadMoreAds() {
+        if (!this.adsResponse.last) {
+          const query = { ...this.query, page: this.adsResponse.number + 1 };
+          this.enhanceSearch(query, true);
+        }
+      },
       search(query) {
-        return Http.fetchAds(query)
-          .then((adsResponse) => {
-            this.adsResponse = adsResponse;
-          });
+        return this.enhanceSearch(query);
+      },
+      enhanceSearch(query, append) {
+        this.query = query;
+        return Http.fetchAds(query).then((adsResponse) => {
+          const ads = adsResponse.content;
+          if (append === true) {
+            ads.forEach(ad => this.loadedAds.push(ad));
+          } else {
+            this.loadedAds = ads;
+          }
+          this.adsResponse = adsResponse;
+        });
       },
     },
   };

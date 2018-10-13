@@ -1,5 +1,5 @@
 <template>
-  <ads-container :ads="ads" :compact="compact" :onThrowOut="swapCard">
+  <ads-container :compact="compact" :onThrowOut="swapCard">
     <b-card v-for="ad in ads" :key="ad.id" tag="article">
       <b-card-body>
         <b-button block variant="dark" :size="compact ? 'lg' : 'sm'"
@@ -51,6 +51,8 @@
     },
     data() {
       return {
+        now: null,
+        scrollHeight: 0,
         shownPhones: Object.create(null),
         compact: false,
       };

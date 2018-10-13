@@ -120,7 +120,7 @@ export default class Auth {
       const value = pair[1];
       if (value !== null &&
           value !== undefined &&
-          value.trim() !== '') {
+          value.toString().trim() !== '') {
         url += `${first ? '?' : '&'}${param}=${value}`;
         first = false;
       }
