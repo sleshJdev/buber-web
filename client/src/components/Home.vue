@@ -38,7 +38,7 @@
         if (!this.adsResponse.last) {
           const query = {
             ...this.query,
-            page: this.adsResponse.number + 1
+            page: this.adsResponse.number + 1,
           };
           this.enhanceSearch(query, true);
         }
