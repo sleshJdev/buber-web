@@ -28,6 +28,10 @@
     data() {
       return {
         config: {
+          allowedDirections: [
+            VueSwing.Direction.LEFT,
+            VueSwing.Direction.RIGHT,
+          ],
           throwOutConfidence: (xOffset, yOffset, element) => {
             const confidence = VueSwing.Card.throwOutConfidence(xOffset, yOffset, element);
             return Math.min(confidence * 3, 1);
@@ -38,17 +42,6 @@
             }
             return false;
           },
-          // transform: (element, coordinateX, coordinateY, rotation) => {
-          //   const signOffset = Math.sign(Math.random() - 0.5);
-          //   const x = coordinateX + (signOffset * 2);
-          //   const y = coordinateY + (signOffset * 4);
-          //   VueSwing.Card.transform(element, x, y, rotation);
-          // },
-          // rotation(coordinateX, coordinateY, element, maxRotation) {
-          //   const signOffset = Math.sign(Math.random() - 0.5);
-          //   const angle = VueSwing.Card.rotation(coordinateX, coordinateY, element, maxRotation);
-          //   return angle === 0 ? (signOffset * (Math.random() * 5)) : angle;
-          // },
         },
       };
     },
