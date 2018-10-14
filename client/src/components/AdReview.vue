@@ -14,7 +14,8 @@
         </p>
         <p>
           <span class="text-info">Created By</span> : {{ad.name || 'Anonymous'}}
-          <span v-if="ad.createdOn" class="text-info">Created On</span> : {{Times.format(ad.createdOn)}}
+          <span v-if="ad.createdOn" class="text-info">Created On</span>
+          : {{Times.format(ad.createdOn)}}
           <span class="text-info">Location</span> : {{ad.city}}
         </p>
         <p>
