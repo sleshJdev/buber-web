@@ -106,9 +106,10 @@
     }
     .card {
       position: absolute;
-      margin-top: 1rem;
-      width: 100%;
-      max-height: 400px !important;
+    }
+
+    .card img {
+      max-height: 350px;
     }
   }
 </style>
