@@ -19,9 +19,11 @@
                   :src="ad.avatar" bottom></b-card-img>
       <b-card-footer>
         <small class="text-muted">
-          {{ad.name || 'Anonymous'}} {{ad.age}},
+          {{ad.name || 'Anonymous'}} {{Times.changeYears(-ad.birthyear)}},
           {{!!ad.price ? ad.price + '$' : 'Not specified'}}<br/>
-          <span class="text-danger">Will be hide at {{endAdDate(ad.createdOn)}}</span>
+          <span class="text-danger">
+            Will be hide at {{Times.format(Times.addDays(ad.createdOn, 5))}}
+          </span>
         </small>
       </b-card-footer>
     </b-card>
@@ -51,6 +53,7 @@
     },
     data() {
       return {
+        Times,
         now: null,
         scrollHeight: 0,
         shownPhones: Object.create(null),
@@ -58,9 +61,6 @@
       };
     },
     methods: {
-      getAgeYears(birthdayUtcString) {
-        return Times.computeAgeYears(birthdayUtcString);
-      },
       swapCard() {
         const topAd = this.ads.pop();
         this.ads.unshift(topAd);
@@ -80,13 +80,6 @@
             id: ad.id,
           },
         });
-      },
-      formatDate(date) {
-        return Times.format(date);
-      },
-      endAdDate(createdOn) {
-        const endDateUtc = Times.endAdDate(createdOn);
-        return Times.format(endDateUtc);
       },
     },
   };

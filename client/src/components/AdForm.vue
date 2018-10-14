@@ -45,17 +45,20 @@
                         placeholder="Enter your price per hour, $">
           </b-form-input>
         </b-form-group>
-        <b-form-group id="form-group-birthday"
+        <b-form-group id="form-group-birthyear"
                       label="Birthday:"
-                      label-for="form-group-birthday"
+                      label-for="form-group-birthyear"
                       description="When you born?"
                       horizontal>
-          <b-form-input id="form-name"
+          <b-form-input id="form-birthyear"
                         size="sm"
-                        type="date"
-                        v-model="form.birthday"
+                        type="number"
+                        step="1"
+                        :min="Times.changeYears(-100)"
+                        :max="Times.changeYears(0)"
+                        v-model="form.birthyear"
                         required
-                        placeholder="You birthfay date">
+                        placeholder="You birth year">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-group-location"
@@ -71,7 +74,6 @@
             :enable-geolocation="true"
             classname="form-control form-control-sm"
             placeholder="Start typing"
-            v-on:placechanged="getAddressData"
             required>
           </vue-google-autocomplete>
         </b-form-group>
@@ -116,16 +118,18 @@
 <script>
   import VueGoogleAutocomplete from 'vue-google-autocomplete';
   import Http from './utils/Http';
+  import Times from './utils/Times';
 
   export default {
     name: 'ad-form',
     components: { VueGoogleAutocomplete },
     data() {
       return {
+        Times,
         form: {
           name: null,
           tel: null,
-          birthday: null,
+          birthyear: Times.changeYears(-18),
           city: null,
           price: null,
           avatar: null,
@@ -134,17 +138,16 @@
       };
     },
     methods: {
-      // eslint-disable-next-line
-      getAddressData(addressData, placeResultData) {
-        this.form.city = addressData.locality;
-      },
       onSubmit() {
+        const location = this.$refs.location;
+        const place = location.autocomplete.getPlace();
+        const addressData = location.formatResult(place);
         const formData = new FormData();
         formData.append('ad', new Blob([JSON.stringify({
           name: this.form.name,
           tel: this.form.tel,
-          birthday: this.form.birthday,
-          location: this.form.city,
+          birthyear: this.form.birthyear,
+          city: addressData.locality,
           price: this.form.price,
           description: this.form.description,
         })], {

@@ -7,14 +7,14 @@
           {{ad.tagline}}
         </p>
         <p>
-          <span class="text-info">Age</span> : {{resolveAge(ad)}} years
+          <span class="text-info">Age</span> : {{Times.changeYears(-ad.birthyear)}} years
           <span class="text-info">Price</span> : {{!!ad.price ? ad.price + '$' : 'Not specified'}}
           <span class="text-info">Tel</span> :
           <b-link :href="`tel:${ad.tel}`">{{ad.tel}}</b-link>
         </p>
         <p>
           <span class="text-info">Created By</span> : {{ad.name || 'Anonymous'}}
-          <span v-if="ad.createdOn" class="text-info">Created On</span> : {{format(ad.createdOn)}}
+          <span v-if="ad.createdOn" class="text-info">Created On</span> : {{Times.format(ad.createdOn)}}
           <span class="text-info">Location</span> : {{ad.city}}
         </p>
         <p>
@@ -46,6 +46,7 @@
     name: 'ad-review',
     data() {
       return {
+        Times,
         ad: null,
       };
     },
@@ -53,12 +54,6 @@
       this.fetchAd();
     },
     methods: {
-      resolveAge(ad) {
-        return ad.age || Times.computeAgeYears(ad.birthday);
-      },
-      format(dateUtcString) {
-        return Times.format(dateUtcString);
-      },
       fetchAd() {
         const adId = this.$route.query.id;
         return Http.doGet(`/api/ads/${adId}`)

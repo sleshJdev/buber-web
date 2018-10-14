@@ -12,12 +12,8 @@ export default {
     const endTime = dateTime + (days * 24/* h */ * 60/* m */ * 60/* s */ * 1000/* ms */);
     return new Date(endTime);
   },
-  endAdDate(createdOn) {
-    return this.addDays(createdOn, 5);
-  },
-  computeAgeYears(birthdayUtcString) {
+  changeYears(years) {
     const nowYear = new Date().getFullYear();
-    const birthdayDate = new Date(birthdayUtcString);
-    return nowYear - birthdayDate.getFullYear();
+    return nowYear + years;
   },
 };

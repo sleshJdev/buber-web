@@ -14,8 +14,7 @@ public class Ad {
     private Float price;
     private String title;
     private String city;
-    private Integer age;
-    private String birthday;
+    private Integer birthyear;
     private String avatar;
     private String name;
     private String ethnicity;
