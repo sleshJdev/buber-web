@@ -1,8 +1,5 @@
 <template>
   <b-container id="app">
-    <div class="mt-lg-3">
-      <nav-bar></nav-bar>
-    </div>
     <div class="mt-lg-5 mb-lg-5">
       <router-view/>
     </div>
@@ -10,12 +7,9 @@
 </template>
 
 <script>
-import NavBar from './components/NavBar';
-
-export default {
-  components: { NavBar },
-  name: 'App',
-};
+  export default {
+    name: 'App',
+  };
 </script>
 
 <style scoped>

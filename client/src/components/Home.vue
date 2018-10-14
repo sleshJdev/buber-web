@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ad-search :on-search="search"></ad-search>
+    <nav-bar :on-search="search"></nav-bar>
     <infinity-scroll :compact="compact" :on-ending="loadMoreAds">
       <ads :compact="compact" :ads="loadedAds"></ads>
     </infinity-scroll>
@@ -13,6 +13,7 @@
   import AdSearch from './AdSearch';
   import Ads from './Ads';
   import Modals from './Modals';
+  import NavBar from './NavBar';
   import InfinityScroll from './InfinityScroll';
 
   export default {
@@ -21,6 +22,7 @@
       InfinityScroll,
       AdSearch,
       Ads,
+      NavBar,
       Modals,
     },
     data() {

@@ -1,12 +1,10 @@
 <template>
-  <b-form inline class="mb-sm-3 pr-md-5 pl-md-5">
+  <b-form inline>
     <b-form-input type="text"
-                  class="col-sm-6 mb-md-1"
                   v-model="query.name"
                   placeholder="Search by name...">
     </b-form-input>
-    <b-form-select class="col-sm-6 mb-md-1"
-                   v-model="query.city"
+    <b-form-select v-model="query.city"
                    :options="cities">
     </b-form-select>
   </b-form>

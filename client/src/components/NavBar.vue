@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="md" variant="faded" type="light">
+  <b-navbar toggleable="sm" variant="faded" type="light">
 
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -10,12 +10,12 @@
     <b-collapse is-nav id="nav_collapse">
 
       <b-navbar-nav>
-        <b-nav-item href="#/">Home</b-nav-item>
-        <b-nav-item href="#/ads" v-if="signedIn">New Ad</b-nav-item>
+        <ad-search :on-search="onSearch"></ad-search>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
+        <b-nav-item href="#/ads" v-if="signedIn">New Ad</b-nav-item>
         <b-nav-item href="#/sign-in" right v-if="!signedIn">Sign In</b-nav-item>
         <b-nav-item-dropdown right v-if="signedIn">
           <!-- Using button-content slot -->
@@ -33,10 +33,15 @@
 
 <script>
   import Http from './utils/Http';
+  import AdSearch from './AdSearch';
 
   let intervalId = null;
   export default {
     name: 'nav-bar',
+    props: ['onSearch'],
+    components: {
+      AdSearch,
+    },
     data() {
       return {
         username: '',
