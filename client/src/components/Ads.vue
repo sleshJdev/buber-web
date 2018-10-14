@@ -32,7 +32,6 @@
 
 <script>
   import Times from './utils/Times';
-  import Http from './utils/Http';
   import AdsContainer from './AdsContainer';
 
   export default {
@@ -66,11 +65,6 @@
         this.ads.unshift(topAd);
       },
       showPhone(ad) {
-        if (!Http.isSignedIn()) {
-          this.$root.$emit('bv::show::modal', 'unauthorizedModal');
-          return;
-        }
-
         this.$set(this.shownPhones, ad.id, true);
       },
       review(ad) {
