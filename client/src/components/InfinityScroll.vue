@@ -12,6 +12,10 @@
         type: Function,
         required: true,
       },
+      compact: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
@@ -21,7 +25,8 @@
     },
     methods: {
       notifyIfNeeded() {
-        if (window.scrollY > this.workHeight
+        if (!this.compact
+          && window.scrollY > this.workHeight
           && this.workHeight !== this.prevWorkHeight) {
           this.prevWorkHeight = this.workHeight;
           this.onEnding();

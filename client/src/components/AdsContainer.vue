@@ -54,11 +54,11 @@
     },
     methods: {
       onThrowIn(event) {
-          const signOffset = Math.sign(Math.random() - 0.5);
-          const x = signOffset * 2;
-          const y = signOffset * 4;
-          const a = signOffset * 4;
-          VueSwing.Card.transform(event.target, x, y, a);
+        const signOffset = Math.sign(Math.random() - 0.5);
+        const x = signOffset * 2;
+        const y = signOffset * 4;
+        const a = signOffset * 4;
+        VueSwing.Card.transform(event.target, x, y, a);
       },
     },
   };

@@ -1,8 +1,8 @@
 <template>
   <div>
     <ad-search :on-search="search"></ad-search>
-    <infinity-scroll :on-ending="loadMoreAds">
-      <ads :ads="loadedAds"></ads>
+    <infinity-scroll :compact="compact" :on-ending="loadMoreAds">
+      <ads :compact="compact" :ads="loadedAds"></ads>
     </infinity-scroll>
     <modals></modals>
   </div>
@@ -28,10 +28,38 @@
         query: {},
         loadedAds: [],
         adsResponse: {},
+        compact: false,
+        loading: false,
       };
     },
     mounted() {
       this.search({});
+      const compact = window.matchMedia('(max-width: 576px)');
+      compact.addListener((it) => {
+        this.compact = it.matches;
+      });
+      this.compact = compact.matches;
+    },
+    watch: {
+      loadedAds(remainingAds) {
+        if (remainingAds.length < 5 && !this.loading) {
+          this.loading = true;
+          this.loadMoreAds().finally(() => {
+            this.loading = false;
+          });
+        }
+      },
+      compact(newcompact) {
+        // if user switched back from mobile view to desktop,
+        // reload first page of ads with user filters
+        if (!newcompact) {
+          const query = {
+            ...this.query,
+            page: 0,
+          };
+          this.search(query);
+        }
+      },
     },
     methods: {
       loadMoreAds() {
@@ -40,8 +68,9 @@
             ...this.query,
             page: this.adsResponse.number + 1,
           };
-          this.enhanceSearch(query, true);
+          return this.enhanceSearch(query, true);
         }
+        return Promise.resolve();
       },
       search(query) {
         return this.enhanceSearch(query);

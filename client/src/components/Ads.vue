@@ -42,13 +42,10 @@
         type: Array,
         required: true,
       },
-    },
-    mounted() {
-      const compact = window.matchMedia('(max-width: 576px)');
-      compact.addListener((it) => {
-        this.compact = it.matches;
-      });
-      this.compact = compact.matches;
+      compact: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
@@ -56,13 +53,11 @@
         now: null,
         scrollHeight: 0,
         shownPhones: Object.create(null),
-        compact: false,
       };
     },
     methods: {
       swapCard() {
-        const topAd = this.ads.pop();
-        this.ads.unshift(topAd);
+        this.ads.pop();
       },
       showPhone(ad) {
         this.$set(this.shownPhones, ad.id, true);
@@ -100,23 +95,19 @@
   }
 
   @media (max-width: 576px) {
-
-  }
-
-  @media (max-width: 576px) {
-    .card:nth-child(3) {
+    .card:nth-child(even) {
       /*top: 2px;*/
-      transform: translate(2px, 2px) rotate(0.4deg);
+      transform: translate(2px, 4px) rotate(2deg);
     }
 
-    .card:nth-child(2) {
+    .card:nth-child(odd) {
       /*top: 4px;*/
-      transform: translate(-4px, -2px) rotate(-1deg);
+      transform: translate(-2px, -4px) rotate(-2deg);
     }
-
     .card {
       position: absolute;
       margin-top: 1rem;
+      width: 100%;
     }
   }
 </style>
