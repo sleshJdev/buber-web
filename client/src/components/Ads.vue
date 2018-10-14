@@ -95,15 +95,15 @@
   }
 
   @media (max-width: 576px) {
-    .card:nth-child(even) {
-      /*top: 2px;*/
-      transform: translate(2px, 4px) rotate(2deg);
-    }
+    /*.card:nth-child(even) {*/
+      /*!*top: 2px;*!*/
+      /*transform: translate(2px, 4px) rotate(2deg);*/
+    /*}*/
 
-    .card:nth-child(odd) {
-      /*top: 4px;*/
-      transform: translate(-2px, -4px) rotate(-2deg);
-    }
+    /*.card:nth-child(odd) {*/
+      /*!*top: 4px;*!*/
+      /*transform: translate(-2px, -4px) rotate(-2deg);*/
+    /*}*/
     .card {
       position: absolute;
       margin-top: 1rem;
