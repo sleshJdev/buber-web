@@ -1,8 +1,6 @@
 <template>
   <b-container id="app">
-    <div class="mt-lg-5 mb-lg-5">
-      <router-view/>
-    </div>
+    <router-view/>
   </b-container>
 </template>
 
