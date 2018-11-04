@@ -15,7 +15,7 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item href="#/ads" v-if="signedIn">New Ad</b-nav-item>
+        <b-nav-item href="#/ads/new" v-if="signedIn">New Ad</b-nav-item>
         <b-nav-item href="#/sign-in" right v-if="!signedIn">Sign In</b-nav-item>
         <b-nav-item-dropdown right v-if="signedIn">
           <!-- Using button-content slot -->

@@ -78,8 +78,8 @@
           </vue-google-autocomplete>
         </b-form-group>
         <b-form-group id="form-group-banner"
-                      label="Banner:"
-                      label-for="form-banner"
+                      label="Avatar:"
+                      label-for="form-banner-0"
                       horizontal>
           <b-form-file id="form-banner"
                        ref="avatar"
@@ -91,6 +91,21 @@
                        required
                        placeholder="Avatar">
           </b-form-file>
+        </b-form-group>
+        <b-form-group horizontal>
+          <div class="custom-control-inline mb-1"
+               v-for="(photo, index) in form.photos" :key="index">
+            <b-button class="mr-1" variant="danger"
+                      @click="removePictureInput(photo)">X
+            </b-button>
+            <b-form-file class="form-control form-control-sm"
+                         accept="image/*" required placeholder="Photo"
+                         size="sm" v-model="photo.value"></b-form-file>
+          </div>
+          <b-button typy="button" size="sm" variant="success"
+                    @click="addMoreAvatarInput">
+            Add more picture
+          </b-button>
         </b-form-group>
         <b-form-group id="form-goup-description"
                       label="Ad description"
@@ -133,11 +148,22 @@
           city: null,
           price: null,
           avatar: null,
+          photos: [],
           description: null,
         },
       };
     },
     methods: {
+      removePictureInput(pic) {
+        debugger;
+        const idx = this.form.photos.indexOf(pic);
+        if (idx >= 0) {
+          this.form.photos.splice(idx, 1);
+        }
+      },
+      addMoreAvatarInput() {
+        this.form.photos.push({ value: null });
+      },
       onSubmit() {
         const location = this.$refs.location;
         const place = location.autocomplete.getPlace();
@@ -153,8 +179,12 @@
         })], {
           type: 'application/json',
         }));
-        formData.append('file', this.form.avatar);
-
+        formData.append('avatar', this.form.avatar);
+        this.form.photos.forEach((it) => {
+          if (it.value) {
+            formData.append('photo', it.value);
+          }
+        });
         Http.doPost('/api/ads', formData, false)
           .then(() => this.$router.push('/'));
       },
@@ -172,5 +202,7 @@
 </script>
 
 <style scoped>
-
+  .custom-control-inline {
+    width: 100%;
+  }
 </style>

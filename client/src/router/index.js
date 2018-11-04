@@ -17,7 +17,7 @@ export default new Router({
       path: '/',
       component: Home,
     }, {
-      path: '/ads',
+      path: '/ads/new',
       component: AdForm,
     }, {
       name: 'sign-in',

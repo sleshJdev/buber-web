@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Set;
+
 @Data
 @Document
 public class Ad {
@@ -24,7 +26,7 @@ public class Ad {
     @Field("phone")
     private String tel;
     private String description;
-    private String[] photos;
+    private Set<String> photos;
     private String createdOn;
     @DBRef
     private ApplicationUser owner;

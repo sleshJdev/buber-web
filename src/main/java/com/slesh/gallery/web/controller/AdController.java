@@ -2,9 +2,9 @@ package com.slesh.gallery.web.controller;
 
 
 import com.slesh.gallery.persistence.model.Ad;
-import com.slesh.gallery.persistence.model.ApplicationUser;
 import com.slesh.gallery.persistence.repository.AdRepository;
 import com.slesh.gallery.persistence.repository.ApplicationUserRepository;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -32,10 +32,15 @@ import java.security.Principal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
@@ -44,6 +49,7 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @RestController
 @RequestMapping("/api/ads")
 public class AdController {
+    public static final String API_ADS_PICTURE_URL = "/api/ads/picture/";
     private final File bannersDir;
     private final AdRepository adRepository;
     private final ApplicationUserRepository userRepository;
@@ -115,12 +121,7 @@ public class AdController {
     @GetMapping(path = "/picture/{key}")
     public void getPicture(@PathVariable String key, HttpServletResponse response) {
         File file = new File(bannersDir, key);
-        String path = file.toString();
-        String subtype = "*";
-        int dot = path.lastIndexOf('.');
-        if (dot != -1) {
-            subtype = path.substring(dot + 1).toLowerCase();
-        }
+        String subtype = findFileExtension(file.toString()).orElse("*");
         response.setStatus(HttpStatus.OK.value());
         response.setContentLengthLong(file.length());
         response.setContentType(MediaType.valueOf("image/" + subtype).toString());
@@ -133,22 +134,63 @@ public class AdController {
     }
 
     @PostMapping
-    public Ad save(@RequestPart Ad ad, @RequestPart MultipartFile file, Principal principal) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        ad.setCreatedOn(formatter.format(LocalDateTime.now(Clock.systemUTC())));
-        String pictureKey = UUID.randomUUID().toString() + file.getOriginalFilename();
-        ad.setAvatar("/api/ads/picture/" + pictureKey);
+    public Ad save(@RequestPart Ad ad,
+                   @RequestPart MultipartFile avatar,
+                   @RequestPart(name = "photo") List<MultipartFile> photos,
+                   Principal principal) {
+        String avatarKey = toKey(avatar);
+        Map<String, MultipartFile> photosMap =
+            photos.stream().collect(Collectors.toMap(
+                this::toKey, Function.identity()));
+        ad.setCreatedOn(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            .format(LocalDateTime.now(Clock.systemUTC())));
+        ad.setAvatar(API_ADS_PICTURE_URL + avatarKey);
+        ad.setPhotos(photosMap.keySet().stream()
+            .map(photoKey -> API_ADS_PICTURE_URL + photoKey)
+            .collect(Collectors.toSet()));
+        ad.setOwner(userRepository.findByUsername(principal.getName()));
 
-        ApplicationUser currentUser = userRepository.findByUsername(principal.getName());
-        ad.setOwner(currentUser);
-
-        Ad instance = adRepository.save(ad);
-        try {
-            file.transferTo(new File(bannersDir, pictureKey));
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't process file", e);
-        }
-        return instance;
+        Map<String, MultipartFile> allAttachments =
+            new HashMap<>(photosMap.size() + 1);
+        allAttachments.putAll(Collections.singletonMap(avatarKey, avatar));
+        allAttachments.putAll(photosMap);
+        atomicSave(allAttachments).ifPresent(throwable -> {
+            throw new RuntimeException("Couldn't save ad", throwable);
+        });
+        return adRepository.save(ad);
     }
 
+    private String toKey(MultipartFile file) {
+        String hash = UUID.randomUUID().toString();
+        return hash + "." + findFileExtension(file.getOriginalFilename())
+            .orElseThrow(() -> new RuntimeException("Couldn't resolve file extension"));
+    }
+
+    private Optional<Throwable> atomicSave(Map<String, MultipartFile> keyFileMap) {
+        for (Map.Entry<String, MultipartFile> entry : keyFileMap.entrySet()) {
+            try {
+                String pictureKey = entry.getKey();
+                MultipartFile file = entry.getValue();
+                file.transferTo(new File(bannersDir, pictureKey));
+            } catch (IOException saveFileException) {
+                saveFileException.printStackTrace();
+                for (String storedFile : keyFileMap.keySet()) {
+                    try {
+                        FileUtils.forceDelete(new File(bannersDir, storedFile));
+                    } catch (IOException deleteFileException) {
+                        deleteFileException.printStackTrace();
+                    }
+                }
+                return Optional.of(saveFileException);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<String> findFileExtension(String file) {
+        int dot = file.lastIndexOf('.');
+        return dot >= 0
+            ? Optional.of(file.substring(dot + 1))
+            : Optional.empty();
+    }
 }
