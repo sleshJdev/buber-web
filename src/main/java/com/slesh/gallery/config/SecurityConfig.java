@@ -57,20 +57,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String tokenHeader;
     private final String tokenPrefix;
     private final String secret;
-    private final ApplicationUserRepository applicationUserRepository;
+    private final ApplicationUserRepository userRepository;
     private final ObjectMapper objectMapper;
 
     public SecurityConfig(@Value("${app.security.token-expiration-time}") long tokenExpirationTime,
                           @Value("${app.security.token-header}") String tokenHeader,
                           @Value("${app.security.token-prefix}") String tokenPrefix,
                           @Value("${app.security.secret-key}") String secret,
-                          ApplicationUserRepository applicationUserRepository,
+                          ApplicationUserRepository userRepository,
                           ObjectMapper objectMapper) {
         this.tokenExpirationTime = tokenExpirationTime;
         this.tokenHeader = tokenHeader;
         this.tokenPrefix = tokenPrefix;
         this.secret = secret;
-        this.applicationUserRepository = applicationUserRepository;
+        this.userRepository = userRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -80,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             Example<ApplicationUser> example = Example.of(
                 new ApplicationUser(key, key, null, null),
                 ExampleMatcher.matchingAny());
-            return applicationUserRepository.findOne(example)
+            return userRepository.findOne(example)
                 .map(user -> new User(
                     user.getUsername(),
                     user.getPassword(),
@@ -152,12 +152,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 HttpServletResponse res,
                                                 FilterChain chain,
                                                 Authentication auth) {
+            String username = ((User) auth.getPrincipal()).getUsername();
             String token = Jwts.builder()
-                .setSubject(((User) auth.getPrincipal()).getUsername())
+                .setSubject(username)
                 .setExpiration(Date.from(Instant.now().plusMillis(tokenExpirationTime)))
                 .signWith(SignatureAlgorithm.HS512, secret.getBytes())
                 .compact();
-            res.addHeader(tokenHeader, tokenPrefix + token);
+            res.addHeader(tokenHeader, String.format("%s %s", tokenPrefix, token));
+            try {
+                ApplicationUser user = userRepository.findByUsername(username);
+                objectMapper.writeValue(res.getOutputStream(), user);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

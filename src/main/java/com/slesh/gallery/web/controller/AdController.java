@@ -49,7 +49,7 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @RestController
 @RequestMapping("/api/ads")
 public class AdController {
-    public static final String API_ADS_PICTURE_URL = "/api/ads/picture/";
+    private static final String API_ADS_PICTURE_URL = "/api/ads/picture/";
     private final File bannersDir;
     private final AdRepository adRepository;
     private final ApplicationUserRepository userRepository;

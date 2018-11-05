@@ -4,6 +4,7 @@ import Home from '../components/Home';
 import AdForm from '../components/AdForm';
 import AdReview from '../components/AdReview';
 import SignInForm from '../components/SignInForm';
+import Profile from '../components/Profile';
 
 Vue.use(Router);
 
@@ -17,12 +18,17 @@ export default new Router({
       path: '/',
       component: Home,
     }, {
-      path: '/ads/new',
+      name: 'ads-editor',
+      path: '/ads/editor',
       component: AdForm,
     }, {
       name: 'sign-in',
       path: '/sign-in',
       component: SignInForm,
+    }, {
+      name: 'profile',
+      path: '/profile',
+      component: Profile,
     },
   ],
 });

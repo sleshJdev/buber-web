@@ -1,7 +1,6 @@
 const HEADER_STRING = 'X-Authorization';
 const AUTH_TOKEN_KEY = 'buber.auth.token';
 const CONTENT_TYPE_HEADER = 'Content-Type';
-const CONTENT_LENGTH_HEADER = 'Content-Length';
 const MEDIA_TYPE_JSON_UTF8 = 'application/json;charset=utf-8';
 
 // eslint-disable-next-line
@@ -39,16 +38,14 @@ function toJson(response) {
   }
   const headers = response.headers;
   const contentType = headers.get(CONTENT_TYPE_HEADER) || '';
-  const contentLength = headers.get(CONTENT_LENGTH_HEADER) || 0;
   const isJson = contentType.toLowerCase() === MEDIA_TYPE_JSON_UTF8;
-  const notEmpty = contentLength > 0;
-  if (isJson || notEmpty) {
+  if (isJson) {
     return response.json();
   }
   return response;
 }
 
-export default class Auth {
+export default class Http {
   static setRouter(therouter) {
     router = therouter;
   }
@@ -70,16 +67,17 @@ export default class Auth {
     return this.doPost(
       '/api/auth/sign-in',
       // eslint-disable-next-line
-      JSON.stringify(credentials)
-    ).then((response) => {
-      const headers = response.headers;
-      if (headers.has(HEADER_STRING)) {
-        localStorage.setItem(AUTH_TOKEN_KEY, headers.get(HEADER_STRING));
-        userInfo = {
-          username: credentials.username,
-        };
-      }
-    });
+      JSON.stringify(credentials))
+      .then((response) => {
+        const headers = response.headers;
+        if (headers.has(HEADER_STRING)) {
+          localStorage.setItem(AUTH_TOKEN_KEY, headers.get(HEADER_STRING));
+        }
+        return response.json();
+      })
+      .then((response) => {
+        userInfo = response;
+      });
   }
 
   static signUp(credentials) {
@@ -88,6 +86,14 @@ export default class Auth {
       // eslint-disable-next-line
       JSON.stringify(credentials)
     );
+  }
+
+  static doDelete(url) {
+    return fetch(url, {
+      method: 'DELETE',
+      headers: getHeader(),
+    }).then(toJson)
+      .catch(toSignForm);
   }
 
   static doGet(url) {
@@ -119,8 +125,8 @@ export default class Auth {
       const param = pair[0];
       const value = pair[1];
       if (value !== null &&
-          value !== undefined &&
-          value.toString().trim() !== '') {
+        value !== undefined &&
+        value.toString().trim() !== '') {
         url += `${first ? '?' : '&'}${param}=${value}`;
         first = false;
       }

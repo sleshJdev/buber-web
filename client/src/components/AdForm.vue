@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2 class="text-center text-info">New Ad</h2>
+    <h2 class="text-center text-info">
+      {{isedit ? 'Editing ad' : 'New Ad'}}
+    </h2>
     <p class="text-center">
       <small class="text-warning">Fill out fields before post your ad</small>
     </p>
@@ -46,7 +48,7 @@
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-group-birthyear"
-                      label="Birthday:"
+                      label="Birthyear:"
                       label-for="form-group-birthyear"
                       description="When you born?"
                       horizontal>
@@ -141,6 +143,7 @@
     data() {
       return {
         Times,
+        isedit: false,
         form: {
           name: null,
           tel: null,
@@ -148,14 +151,24 @@
           city: null,
           price: null,
           avatar: null,
-          photos: [],
+          photos: null,
           description: null,
         },
       };
     },
+    mounted() {
+      const adId = this.$route.query.id;
+      this.isedit = !!adId;
+      if (adId) {
+        Http.doGet(`/api/ads/${adId}`)
+          .then((ad) => {
+            this.form = ad;
+            this.$refs.location.update(ad.city);
+          });
+      }
+    },
     methods: {
       removePictureInput(pic) {
-        debugger;
         const idx = this.form.photos.indexOf(pic);
         if (idx >= 0) {
           this.form.photos.splice(idx, 1);

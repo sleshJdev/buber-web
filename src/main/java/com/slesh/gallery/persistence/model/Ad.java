@@ -1,5 +1,6 @@
 package com.slesh.gallery.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -29,5 +30,6 @@ public class Ad {
     private Set<String> photos;
     private String createdOn;
     @DBRef
+    @JsonIgnore
     private ApplicationUser owner;
 }
