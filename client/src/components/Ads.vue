@@ -14,9 +14,11 @@
           </b-link>
         </div>
       </b-card-body>
-      <b-card-img @click="review(ad)"
-                  :class="{'ad-card': !compact}"
-                  :src="ad.avatar" bottom></b-card-img>
+      <crop-card-img :url="ad.avatar">
+        <b-card-img @click="review(ad)"
+                    :class="{'ad-card': !compact}"
+                    :src="ad.avatar" bottom></b-card-img>
+      </crop-card-img>
       <b-card-footer>
         <small class="text-muted">
           {{ad.name || 'Anonymous'}} {{Times.changeYears(-ad.birthyear)}},
@@ -33,10 +35,11 @@
 <script>
   import Times from './utils/Times';
   import AdsContainer from './AdsContainer';
+  import CropCardImg from './CropCardImg';
 
   export default {
     name: 'ads',
-    components: { AdsContainer },
+    components: { CropCardImg, AdsContainer },
     props: {
       ads: {
         type: Array,
@@ -104,6 +107,7 @@
       /*top: 4px;*/
       transform: translate(-2px, -4px) rotate(-2deg);
     }
+
     .card {
       position: absolute;
     }

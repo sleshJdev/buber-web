@@ -22,7 +22,9 @@
         <p>
           <span class="text-info">Description</span> {{ad.description}}
         </p>
-        <b-img :src="ad.avatar" fluid-grow></b-img>
+        <crop-card-img :url="ad.avatar">
+          <b-img :src="ad.avatar" fluid-grow></b-img>
+        </crop-card-img>
       </b-media>
     </b-card>
     <div v-if="ad.photos && ad.photos.length">
@@ -30,9 +32,10 @@
         Gallery
       </p>
       <b-card-group columns>
-        <b-card-img v-for="photo in ad.photos" :key="photo"
-                    :src="`${photo.replace('/ths/', '/main/')}`">
-        </b-card-img>
+        <crop-card-img :url="photo" v-for="photo in ad.photos" :key="photo">
+          <b-card-img :src="`${photo.replace('/ths/', '/main/')}`">
+          </b-card-img>
+        </crop-card-img>
       </b-card-group>
     </div>
   </div>
@@ -43,9 +46,10 @@
   import Http from './utils/Http';
   import Ads from './Ads';
   import NavBar from './NavBar';
+  import CropCardImg from './CropCardImg';
 
   export default {
-    components: { Ads, NavBar },
+    components: { CropCardImg, Ads, NavBar },
     name: 'ad-review',
     data() {
       return {
@@ -69,4 +73,11 @@
 </script>
 
 <style scoped>
+  .crop {
+    overflow: hidden;
+  }
+
+  .crop img {
+    margin-bottom: -20%;
+  }
 </style>
