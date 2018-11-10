@@ -4,7 +4,7 @@
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
     <b-navbar-brand href="#/">
-      <b-img src="static/logo.png" class="d-inline-block align-top" width="100"/>
+      <b-img src="static/logo.png" class="d-inline-block align-top mr-md-2" width="100"/>
     </b-navbar-brand>
 
     <b-collapse is-nav id="nav_collapse">

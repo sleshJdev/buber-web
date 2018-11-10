@@ -1,12 +1,14 @@
 <template>
   <b-form inline>
-    <b-form-input type="text"
-                  v-model="query.name"
-                  placeholder="Search by name...">
-    </b-form-input>
-    <b-form-select v-model="query.city"
-                   :options="cities">
-    </b-form-select>
+    <div class="row">
+      <b-form-input type="text"
+                    v-model="query.name"
+                    placeholder="Search by name...">
+      </b-form-input>
+      <b-form-select v-model="query.city"
+                     :options="cities">
+      </b-form-select>
+    </div>
   </b-form>
 </template>
 
