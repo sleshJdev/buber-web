@@ -1,6 +1,6 @@
 <template>
   <ads-container :compact="compact" :onThrowOut="swapCard">
-    <b-card v-for="ad in ads" :key="ad.id" tag="article">
+    <b-card v-for="ad in ads" :key="ad.id" tag="article" no-body>
       <b-card-body>
         <b-button block variant="dark" :size="compact ? 'lg' : 'sm'"
                   v-if="!shownPhones[ad.id]" @click.stop="showPhone(ad)">

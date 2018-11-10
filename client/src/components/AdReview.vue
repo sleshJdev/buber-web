@@ -1,5 +1,6 @@
 <template>
   <div v-if="!!ad">
+    <nav-bar></nav-bar>
     <b-card>
       <b-media>
         <h5 class="mt-0 mb-2"><span class="text-info">{{ad.name || 'Anonymous'}}</span></h5>
@@ -26,7 +27,7 @@
     </b-card>
     <div v-if="ad.photos && ad.photos.length">
       <p class="text-info mt-3">
-        More photos from this user
+        Gallery
       </p>
       <b-card-group columns>
         <b-card-img v-for="photo in ad.photos" :key="photo"
@@ -41,9 +42,10 @@
   import Times from './utils/Times';
   import Http from './utils/Http';
   import Ads from './Ads';
+  import NavBar from './NavBar';
 
   export default {
-    components: { Ads, Times },
+    components: { Ads, NavBar },
     name: 'ad-review',
     data() {
       return {

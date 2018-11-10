@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -134,30 +135,82 @@ public class AdController {
     }
 
     @PostMapping
-    public Ad save(@RequestPart Ad ad,
-                   @RequestPart MultipartFile avatar,
-                   @RequestPart(name = "photo") List<MultipartFile> photos,
+    public Ad save(@RequestPart(name = "ad") Ad update,
+                   @RequestPart(name = "avatar", required = false) MultipartFile avatar,
+                   @RequestPart(name = "newphoto", required = false) List<MultipartFile> newPhotos,
                    Principal principal) {
-        String avatarKey = toKey(avatar);
-        Map<String, MultipartFile> photosMap =
-            photos.stream().collect(Collectors.toMap(
-                this::toKey, Function.identity()));
-        ad.setCreatedOn(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            .format(LocalDateTime.now(Clock.systemUTC())));
-        ad.setAvatar(API_ADS_PICTURE_URL + avatarKey);
-        ad.setPhotos(photosMap.keySet().stream()
-            .map(photoKey -> API_ADS_PICTURE_URL + photoKey)
-            .collect(Collectors.toSet()));
-        ad.setOwner(userRepository.findByUsername(principal.getName()));
+        Ad ad = update.getId() == null ? update :
+            adRepository.findById(update.getId()).orElseThrow(() ->
+                new RuntimeException("Ad with id " + update.getId() + " not found "));
 
-        Map<String, MultipartFile> allAttachments =
-            new HashMap<>(photosMap.size() + 1);
-        allAttachments.putAll(Collections.singletonMap(avatarKey, avatar));
-        allAttachments.putAll(photosMap);
-        atomicSave(allAttachments).ifPresent(throwable -> {
+        if (ad.getId() == null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            ad.setCreatedOn(formatter.format(LocalDateTime.now(Clock.systemUTC())));
+            ad.setOwner(userRepository.findByUsername(principal.getName()));
+        }
+
+        Map<String, MultipartFile> keyPhotoMap = Collections.emptyMap();
+        if (!CollectionUtils.isEmpty(newPhotos)) {
+            keyPhotoMap = newPhotos.stream().collect(
+                Collectors.toMap(this::toKey, Function.identity()));
+        }
+        String avatarKey = ad.getAvatar();
+        Map<String, MultipartFile> attachments = new HashMap<>(keyPhotoMap);
+        if (avatar != null) {
+            avatarKey = toKey(avatar);
+            attachments.put(avatarKey, avatar);
+        }
+        atomicSave(attachments).ifPresent(throwable -> {
             throw new RuntimeException("Couldn't save ad", throwable);
         });
+
+        if (ad.getId() == null || !avatarKey.equals(ad.getAvatar())) {
+            if (StringUtils.hasText(ad.getAvatar())) {
+                deletePhotoQuiet(ad.getAvatar());
+            }
+            ad.setAvatar(API_ADS_PICTURE_URL + avatarKey);
+        }
+
+        Set<String> photoUrls = keyPhotoMap.keySet().stream()
+            .map(photoKey -> API_ADS_PICTURE_URL + photoKey)
+            .collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(update.getPhotos())) {
+            photoUrls.addAll(update.getPhotos());
+        }
+        if (!CollectionUtils.isEmpty(ad.getPhotos())) {
+            for (String photo : ad.getPhotos()) {
+                if (!photoUrls.contains(photo)) {
+                    deletePhotoQuiet(photo);
+                }
+            }
+        }
+        ad.setPhotos(photoUrls);
+
+        ad.setPrice(update.getPrice());
+        ad.setTitle(update.getTitle());
+        ad.setCity(update.getCity());
+        ad.setBirthyear(update.getBirthyear());
+        ad.setName(update.getName());
+        ad.setEthnicity(update.getEthnicity());
+        ad.setAvailability(update.getAvailability());
+        ad.setUrl(update.getUrl());
+        ad.setTagline(update.getTagline());
+        ad.setTel(update.getTel());
+        ad.setDescription(update.getDescription());
+
         return adRepository.save(ad);
+    }
+
+    private void deletePhotoQuiet(String url) {
+        deleteQuiet(StringUtils.delete(url, API_ADS_PICTURE_URL));
+    }
+
+    private void deleteQuiet(String key) {
+        try {
+            FileUtils.forceDelete(new File(bannersDir, key));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private String toKey(MultipartFile file) {
@@ -175,11 +228,7 @@ public class AdController {
             } catch (IOException saveFileException) {
                 saveFileException.printStackTrace();
                 for (String storedFile : keyFileMap.keySet()) {
-                    try {
-                        FileUtils.forceDelete(new File(bannersDir, storedFile));
-                    } catch (IOException deleteFileException) {
-                        deleteFileException.printStackTrace();
-                    }
+                    deleteQuiet(storedFile);
                 }
                 return Optional.of(saveFileException);
             }

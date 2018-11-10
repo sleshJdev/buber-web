@@ -9,7 +9,7 @@
 
     <b-collapse is-nav id="nav_collapse">
 
-      <b-navbar-nav>
+      <b-navbar-nav v-if="onSearch">
         <ad-search :on-search="onSearch"></ad-search>
       </b-navbar-nav>
 
@@ -18,12 +18,12 @@
         <b-nav-item href="#/ads/editor" v-if="signedIn">New Ad</b-nav-item>
         <b-nav-item href="#/sign-in" right v-if="!signedIn">Sign In</b-nav-item>
         <b-nav-item-dropdown right v-if="signedIn">
+          <b-dropdown-item href="#/profile">Profile</b-dropdown-item>
+          <b-dropdown-item href="#" @click="signOut">SignOut</b-dropdown-item>
           <!-- Using button-content slot -->
           <template slot="button-content">
             Hi, <em>{{username}}</em>!
           </template>
-          <b-dropdown-item href="#/profile">Profile</b-dropdown-item>
-          <b-dropdown-item href="#" @click="signOut">SignOut</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
 
