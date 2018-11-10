@@ -5,8 +5,13 @@
 </template>
 
 <script>
+  import Http from './components/utils/Http';
+
   export default {
     name: 'App',
+    created() {
+      Http.relogin();
+    },
   };
 </script>
 

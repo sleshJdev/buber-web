@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-5">
     <h2 class="text-center text-info">{{label}}</h2>
     <p class="text-center" v-if="message">
       <small v-bind:class="[success ? 'text-success' : 'text-danger']">

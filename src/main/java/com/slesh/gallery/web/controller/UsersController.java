@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
@@ -27,6 +28,11 @@ public class UsersController {
                            ApplicationUserRepository userRepository) {
         this.adRepository = adRepository;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping("/details")
+    public ApplicationUser userDetails(Principal principal) {
+        return userRepository.findByUsername(principal.getName());
     }
 
     @DeleteMapping("/{userId}/ads/{adId}")

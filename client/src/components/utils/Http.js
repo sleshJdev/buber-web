@@ -58,6 +58,14 @@ export default class Http {
     return !!userInfo;
   }
 
+  static relogin() {
+    return this.doGet('/api/users/details')
+      .then((response) => {
+        userInfo = response;
+        router.push('/');
+      });
+  }
+
   static signOut() {
     userInfo = null;
     localStorage.removeItem(AUTH_TOKEN_KEY);
